@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/shared/overrides/ai_module_buttons.css">
   <script src="/shared/ai/bus.js"></script>
 </head>
+
 <body>
   <header class="topbar">
     <h1>AI Nominclactor</h1>
@@ -15,78 +16,85 @@
   </header>
 
   <main class="container">
+
+    <!-- CARD 1 -->
     <section class="card">
       <h2>Module Online</h2>
-      <p>This is the starting point for the AI Nominclactor module. From here we will integrate the pre-assessment flow and the psychiatric evaluation scaffold.</p>
+      <p>This module is active and acting as the intake brain hub.</p>
       <button id="check-ready">Run Self-Check</button>
       <pre id="status" aria-live="polite"></pre>
     </section>
 
-    <!-- Intake Modules Hub Panel -->
+    <!-- CARD 2: Navigation -->
     <section class="card">
-      <h2>Intake Modules</h2>
-      <p>Select which intake brain you want to open. These routes stay wired to the shared AI + VNP layer.</p>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
-        <a class="btn primary" href="/pre-assessment-ctc-intake/">Pre-Assessment CTC Intake</a>
-        <a class="btn secondary" href="/psychosocial/">Psychosocial Module</a>
-        <a class="btn secondary" href="/treatment-plan/">Treatment Plan</a>
-        <a class="btn secondary" href="/releases-consents/">Releases & Consents</a>
-      </div>
-    </section>
-  </main>
+      <h2>Intake Document Modules</h2>
+      <p>Select a module to open its dedicated UI.</p>
 
-        This is the starting point for the AI Nominclactor module. From here we integrate:
-        Pre-Assessment CTC Intake, Psychosocial, Treatment Plan, and Releases/Consents under a single AI brain.
-      </p>
-      <button id="check-ready">Run Self-Check</button>
-      <pre id="status" aria-live="polite"></pre>
-    </section>
-
-    <section class="card">
-      <h2>Intake Modules</h2>
-      <p>Select which intake surface you want to open under AI supervision.</p>
-      <div class="module-grid">
-        <a class="btn primary" href="/pre-assessment-ctc-intake/">Pre-Assessment CTC Intake</a>
-        <a class="btn primary" href="/psychosocial/">Psychosocial / Biopsychosocial</a>
-        <a class="btn primary" href="/treatment-plan/">Treatment Plan</a>
-        <a class="btn primary" href="/releases-consents/">Releases &amp; Consents</a>
+      <div class="actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <button class="btn" data-target="/pre-assessment-ctc-intake/">
+          Pre-Assessment CTC Intake
+        </button>
+        <button class="btn" data-target="/psychosocial/">
+          Psychosocial
+        </button>
+        <button class="btn" data-target="/treatment-plan/">
+          Treatment Plan
+        </button>
+        <button class="btn" data-target="/releases-consents/">
+          Releases &amp; Consents
+        </button>
       </div>
     </section>
 
-    <section class="actions" style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap">
-      <button id="mic" type="button" class="btn secondary">🎙️ Mic</button>
-      <button id="export-json" type="button" class="btn secondary">Export Summary JSON</button>
-      <button id="reset-session" type="button" class="btn danger">Reset Interview</button>
-    </section>
   </main>
 
-  <!-- Local hub scripts -->
+  <!-- Local module scripts -->
   <script src="assets/js/app.js"></script>
   <script src="assets/js/ai-bridge.js"></script>
 
-  <!-- Shared AI wiring (kept exactly from your prior stack) -->
+  <!-- Shared AI / buttons -->
   <script src="/shared/overrides/ai_module_buttons.js"></script>
   <script src="/shared/ai/ai-button-observer.js"></script>
   <script src="/ai-nominclactor/assets/js/algos.js?v=1759416500"></script>
+
+  <!-- Core AI bus + VNP Phase 2 brain -->
   <script src="/shared/ai/vcall-bridge.js"></script>
   <script src="/shared/ai/ai_bus.js?v=1759319983"></script>
   <script src="/shared/ai/vnp_phase2_algorithms.js?v=1759416500"></script>
   <script src="/shared/overrides/ai_action_dispatch.js"></script>
 
-  <script src="/shared/vcall/vcall-bridge.js"></script>
-  <script src="/shared/ai/vsc_bridge.js?v=1759319983"></script>
+  <!-- No TS export files here -->
   <script src="/shared/ai/interop_bridge_polyfill.js?v=1759319983"></script>
-  <script src="/shared/consent/bio_consent.js?v=1759319983"></script>
   <script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
   <script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
   <script src="/shared/ai/alg_init.js?v=1759416500"></script>
+
+  <!-- UI + projection -->
   <script src="/shared/ui/ai_button.js?v=1759416500"></script>
   <script src="/shared/projection/projection_renderer.js?v=1759416500"></script>
   <script src="/shared/projection/chip_activation.js?v=1759416500"></script>
   <script src="/shared/projection/environment_loader.js?v=1759416500"></script>
+</body>
+</html>
 
-  <!-- Local TTS helper -->
-  <script src="assets/js/tts.js"></script>
+  <!-- DO NOT USE ANY TS_RUNTIME EXPORT FILES -->
+  <!-- NO emotional_thresholds.js -->
+  <!-- NO bandersnatch/index.js -->
+
+  <!-- Safe shared runtime -->
+  <script src="/shared/ai/interop_bridge_polyfill.js?v=1759319983"></script>
+  <script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
+  <script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
+  <script src="/shared/ai/alg_init.js?v=1759416500"></script>
+
+  <!-- UI -->
+  <script src="/shared/ui/ai_button.js?v=1759416500"></script>
+
+  <!-- Projection -->
+  <script src="/shared/projection/projection_renderer.js?v=1759416500"></script>
+  <script src="/shared/projection/chip_activation.js?v=1759416500"></script>
+  <script src="/shared/projection/environment_loader.js?v=1759416500"></script>
+
 </body>
 </html>
 
