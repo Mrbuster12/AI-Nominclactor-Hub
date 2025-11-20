@@ -108,3 +108,89 @@
   w.VSCAlgos = { ITS001_EDL, ITS002_CCES, ITS003_SSPE, ITS004_RFD,
                  ITS005_SBEP, ITS006_IAS, ITS007_RRT, ITS008_CEM, ITS009_CAE };
 })(window, document);
+
+// -------- VNP Phase 2 bridge for AI Nominclactor hub --------
+document.addEventListener('DOMContentLoaded', function () {
+  const status = document.getElementById('status');
+
+  // If VNP Phase 2 is present, reflect it in the status panel
+  const aiAlgos = window.AI_ALGOS || null;
+  if (status && aiAlgos && typeof aiAlgos === 'object') {
+    const keys = Object.keys(aiAlgos);
+    if (keys.length) {
+      const prefix = status.textContent || '';
+      status.textContent =
+        (prefix ? prefix + '\n\n' : '') +
+        'VNP Phase 2 Online:\n- ' + keys.join('\n- ');
+    }
+  }
+
+  // Create/locate actions row
+  let row = document.querySelector('.actions');
+  if (!row) {
+    row = document.createElement('section');
+    row.className = 'actions';
+    row.style.cssText = 'display:flex;gap:8px;margin:12px 0;flex-wrap:wrap';
+    (document.querySelector('.wrap') || document.body).appendChild(row);
+  }
+
+  // Add a dedicated VNP trigger button
+  let vnpBtn = document.getElementById('run-vnp-scenario');
+  if (!vnpBtn) {
+    vnpBtn = document.createElement('button');
+    vnpBtn.id = 'run-vnp-scenario';
+    vnpBtn.type = 'button';
+    vnpBtn.className = 'btn primary';
+    vnpBtn.textContent = 'Run VNP Scenario Driver';
+    row.appendChild(vnpBtn);
+  }
+
+  vnpBtn.addEventListener('click', function () {
+    const algos = window.AI_ALGOS || {};
+    const scenarioFn =
+      algos.vnp_psy_phase3_scenario_driver ||
+      algos.VNP_DSM_SPLINTER ||
+      null;
+
+    if (!scenarioFn) {
+      console.warn('[AI-Hub] VNP Phase 2 algorithms not attached to window.AI_ALGOS');
+      if (status) {
+        const prefix = status.textContent || '';
+        status.textContent =
+          (prefix ? prefix + '\n\n' : '') +
+          'VNP Phase 2 not available (no scenario driver found).';
+      }
+      return;
+    }
+
+    const payload = {
+      source: 'ai-nominclactor-hub',
+      at: new Date().toISOString(),
+      mode: 'test-harness',
+      ctx: {
+        page: 'ai-nominclactor',
+        intent: 'vnp_phase2_scenario'
+      }
+    };
+
+    try {
+      console.log('[AI-Hub] Invoking VNP Phase 2 scenario driver with payload:', payload);
+      scenarioFn(payload);
+      if (status) {
+        const prefix = status.textContent || '';
+        status.textContent =
+          (prefix ? prefix + '\n\n' : '') +
+          'VNP Phase 2 scenario fired from hub.';
+      }
+    } catch (e) {
+      console.error('[AI-Hub] VNP Phase 2 call failed:', e);
+      if (status) {
+        const prefix = status.textContent || '';
+        status.textContent =
+          (prefix ? prefix + '\n\n' : '') +
+          'VNP Phase 2 error: ' + String(e);
+      }
+    }
+  });
+});
+

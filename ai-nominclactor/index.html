@@ -17,7 +17,24 @@
   <main class="container">
     <section class="card">
       <h2>Module Online</h2>
-      <p>
+      <p>This is the starting point for the AI Nominclactor module. From here we will integrate the pre-assessment flow and the psychiatric evaluation scaffold.</p>
+      <button id="check-ready">Run Self-Check</button>
+      <pre id="status" aria-live="polite"></pre>
+    </section>
+
+    <!-- Intake Modules Hub Panel -->
+    <section class="card">
+      <h2>Intake Modules</h2>
+      <p>Select which intake brain you want to open. These routes stay wired to the shared AI + VNP layer.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+        <a class="btn primary" href="/pre-assessment-ctc-intake/">Pre-Assessment CTC Intake</a>
+        <a class="btn secondary" href="/psychosocial/">Psychosocial Module</a>
+        <a class="btn secondary" href="/treatment-plan/">Treatment Plan</a>
+        <a class="btn secondary" href="/releases-consents/">Releases & Consents</a>
+      </div>
+    </section>
+  </main>
+
         This is the starting point for the AI Nominclactor module. From here we integrate:
         Pre-Assessment CTC Intake, Psychosocial, Treatment Plan, and Releases/Consents under a single AI brain.
       </p>
@@ -53,6 +70,7 @@
   <script src="/ai-nominclactor/assets/js/algos.js?v=1759416500"></script>
   <script src="/shared/ai/vcall-bridge.js"></script>
   <script src="/shared/ai/ai_bus.js?v=1759319983"></script>
+  <script src="/shared/ai/vnp_phase2_algorithms.js?v=1759416500"></script>
   <script src="/shared/overrides/ai_action_dispatch.js"></script>
 
   <script src="/shared/vcall/vcall-bridge.js"></script>
