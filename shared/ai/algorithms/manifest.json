@@ -1,0 +1,30 @@
+{
+  "core": [
+    {"key":"SCRL","name":"Simulated Clinician Reflex Loop","domain":"Core"},
+    {"key":"PAARE","name":"PAARE Logic Engine","domain":"Core"},
+    {"key":"ECLIPSE_SNATCH","name":"Eclipse Snatch Reflex","domain":"Core"},
+    {"key":"BUCKYBALL","name":"Buckyball Structural Logic","domain":"Core"},
+    {"key":"DAP_ENGINE","name":"Documentation/DAP Engine","domain":"Core"}
+  ],
+  "tier6": [
+    {"key":"T6_001","name":"Inferiority Compensation Loop","domain":"Adlerian"},
+    {"key":"T6_002","name":"Birth Order Calibration","domain":"Adlerian"},
+    {"key":"T6_003","name":"Courage Activation Sequence","domain":"Adlerian"}
+  ],
+  "tier7": [
+    {"key":"T7_001","name":"Exception-Seeking Dialogue Generator","domain":"Postmodern"},
+    {"key":"T7_002","name":"Problem-Saturated Story Deconstruction","domain":"Postmodern"},
+    {"key":"T7_003","name":"Unique Outcomes Scaffold","domain":"Postmodern"}
+  ],
+  "tier8": [
+    {"key":"T8_001","name":"Commitment Engine","domain":"Existential"},
+    {"key":"T8_002","name":"Boundary Reconstruction","domain":"Existential"},
+    {"key":"T8_003","name":"Meaning-Making Loop","domain":"Existential"}
+  ],
+  "tier9": [
+    {"key":"T9_PAARE","name":"PAARE Logic Engine","domain":"Eclipse"},
+    {"key":"T9_SNATCH","name":"Eclipse Snatch Reflex","domain":"Eclipse"},
+    {"key":"T9_GATE","name":"Gatekeeper Manual","domain":"Eclipse"},
+    {"key":"T9_BBSC","name":"BBSC Logic","domain":"Eclipse"}
+  ]
+}

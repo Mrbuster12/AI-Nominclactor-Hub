@@ -1,0 +1,1 @@
+(function(w){const s=Object.create(null),m=new Map();function g(k){return s[k]}function t(k,v){s[k]=v;const a=m.get(k);if(a)a.forEach(f=>{try{f(v,k)}catch{}})}function sub(k,f){if(!m.has(k))m.set(k,new Set());m.get(k).add(f);return ()=>m.get(k)?.delete(f)}w.VSCState={get:g,set:t,subscribe:sub,store:s};})(window);

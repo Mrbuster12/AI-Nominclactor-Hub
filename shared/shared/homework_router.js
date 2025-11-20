@@ -1,0 +1,1 @@
+{{HOMEWORK_ROUTER_JS}}

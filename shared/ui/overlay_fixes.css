@@ -1,0 +1,42 @@
+.debug-panel,
+.consent-pill,
+#consentBanner,
+#bpirlToggle,
+.other-bottom-panels {
+  position: fixed !important;
+  top: 12px !important;
+  right: 12px !important;
+  bottom: auto !important;
+  left: auto !important;
+  margin: 0;
+  z-index: 99990;
+}
+#buckyHud,
+#__bucky_hud__ {
+  position: fixed !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 99999;
+}
+
+/* place the VNP badge in the top-left */
+#__vnp_badge_node__{
+  position: fixed !important;
+  top: 12px !important;
+  left: 12px !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  z-index: 99995 !important;
+}
+#clinicianTendencies,
+.clinician-tendencies,
+.dropdown-clinician,
+[data-role="clinician-tendencies"],
+[aria-label*="Clinician Tendencies" i],
+[title*="Clinician Tendencies" i] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}

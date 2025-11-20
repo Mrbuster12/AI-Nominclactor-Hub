@@ -1,0 +1,218 @@
+{
+  "Scenario 1": {
+    "title": "CBT Intake",
+    "description": "Initial client intake using cognitive behavioral therapy framework.",
+    "goals": [
+      "Identify negative thought patterns",
+      "Establish baseline mood tracking",
+      "Set initial coping goals"
+    ],
+    "scrl_checkpoints": [
+      "biometric_login",
+      "goal_confirmation",
+      "session_closure"
+    ],
+    "biometric_flags": [
+      "stable_hr",
+      "normal_respiration"
+    ]
+  },
+  "Scenario 2": {
+    "title": "MI Relapse Prevention",
+    "description": "Motivational interviewing scenario targeting relapse triggers.",
+    "goals": [
+      "Explore ambivalence around substance use",
+      "Highlight past motivation for change",
+      "Establish relapse prevention goal"
+    ],
+    "scrl_checkpoints": [
+      "voice_check",
+      "mid-session cue",
+      "biometric_exit"
+    ],
+    "biometric_flags": [
+      "mild_gsr_variation",
+      "elevated_heart_rate"
+    ]
+  },
+  "Scenario 3": {
+    "title": "Trauma Narrative Review",
+    "description": "Guided VSC-led narrative review with safety checkpoint integration.",
+    "goals": [
+      "Begin trauma timeline reconstruction",
+      "Introduce grounding strategy",
+      "Confirm crisis plan"
+    ],
+    "scrl_checkpoints": [
+      "initial grounding",
+      "bio-scan stability",
+      "narrative confirmation"
+    ],
+    "biometric_flags": [
+      "spiked_gsr",
+      "rapid_breathing"
+    ]
+  },
+  "Scenario 4": {
+    "title": "Adlerian Intake",
+    "description": "Initial client intake using the Adlerian therapeutic framework.",
+    "goals": [
+      "Introduce core Adlerian concepts",
+      "Establish therapeutic rapport",
+      "Identify client goals aligned with this framework"
+    ],
+    "scrl_checkpoints": [
+      "biometric_login",
+      "framework_alignment_confirmed",
+      "session_closure"
+    ],
+    "biometric_flags": [
+      "stable_hr",
+      "normal_respiration"
+    ]
+  },
+  "Scenario 5": {
+    "title": "Existential Intake",
+    "description": "Initial client intake using the Existential therapeutic framework.",
+    "goals": [
+      "Introduce core Existential concepts",
+      "Establish therapeutic rapport",
+      "Identify client goals aligned with this framework"
+    ],
+    "scrl_checkpoints": [
+      "biometric_login",
+      "framework_alignment_confirmed",
+      "session_closure"
+    ],
+    "biometric_flags": [
+      "stable_hr",
+      "normal_respiration"
+    ]
+  },
+  "Scenario 6": {
+    "title": "Gestalt Intake",
+    "description": "Initial client intake using the Gestalt therapeutic framework.",
+    "goals": [
+      "Introduce core Gestalt concepts",
+      "Establish therapeutic rapport",
+      "Identify client goals aligned with this framework"
+    ],
+    "scrl_checkpoints": [
+      "biometric_login",
+      "framework_alignment_confirmed",
+      "session_closure"
+    ],
+    "biometric_flags": [
+      "stable_hr",
+      "normal_respiration"
+    ]
+  },
+  "Scenario 7": {
+    "title": "Humanistic / Person-Centered Intake",
+    "description": "Initial client intake using the Humanistic / Person-Centered therapeutic framework.",
+    "goals": [
+      "Introduce core Humanistic / Person-Centered concepts",
+      "Establish therapeutic rapport",
+      "Identify client goals aligned with this framework"
+    ],
+    "scrl_checkpoints": [
+      "biometric_login",
+      "framework_alignment_confirmed",
+      "session_closure"
+    ],
+    "biometric_flags": [
+      "stable_hr",
+      "normal_respiration"
+    ]
+  },
+  "Scenario 8": {
+    "title": "Integrative / Eclectic Intake",
+    "description": "Initial client intake using the Integrative / Eclectic therapeutic framework.",
+    "goals": [
+      "Introduce core Integrative / Eclectic concepts",
+      "Establish therapeutic rapport",
+      "Identify client goals aligned with this framework"
+    ],
+    "scrl_checkpoints": [
+      "biometric_login",
+      "framework_alignment_confirmed",
+      "session_closure"
+    ],
+    "biometric_flags": [
+      "stable_hr",
+      "normal_respiration"
+    ]
+  },
+  "Scenario 9": {
+    "title": "Jungian (Analytical) Intake",
+    "description": "Initial client intake using the Jungian (Analytical) therapeutic framework.",
+    "goals": [
+      "Introduce core Jungian (Analytical) concepts",
+      "Establish therapeutic rapport",
+      "Identify client goals aligned with this framework"
+    ],
+    "scrl_checkpoints": [
+      "biometric_login",
+      "framework_alignment_confirmed",
+      "session_closure"
+    ],
+    "biometric_flags": [
+      "stable_hr",
+      "normal_respiration"
+    ]
+  },
+  "Scenario 10": {
+    "title": "Narrative Therapy Intake",
+    "description": "Initial client intake using the Narrative Therapy therapeutic framework.",
+    "goals": [
+      "Introduce core Narrative Therapy concepts",
+      "Establish therapeutic rapport",
+      "Identify client goals aligned with this framework"
+    ],
+    "scrl_checkpoints": [
+      "biometric_login",
+      "framework_alignment_confirmed",
+      "session_closure"
+    ],
+    "biometric_flags": [
+      "stable_hr",
+      "normal_respiration"
+    ]
+  },
+  "Scenario 11": {
+    "title": "Psychodynamic Intake",
+    "description": "Initial client intake using the Psychodynamic therapeutic framework.",
+    "goals": [
+      "Introduce core Psychodynamic concepts",
+      "Establish therapeutic rapport",
+      "Identify client goals aligned with this framework"
+    ],
+    "scrl_checkpoints": [
+      "biometric_login",
+      "framework_alignment_confirmed",
+      "session_closure"
+    ],
+    "biometric_flags": [
+      "stable_hr",
+      "normal_respiration"
+    ]
+  },
+  "Scenario 12": {
+    "title": "Solution-Focused Intake",
+    "description": "Initial client intake using the Solution-Focused therapeutic framework.",
+    "goals": [
+      "Introduce core Solution-Focused concepts",
+      "Establish therapeutic rapport",
+      "Identify client goals aligned with this framework"
+    ],
+    "scrl_checkpoints": [
+      "biometric_login",
+      "framework_alignment_confirmed",
+      "session_closure"
+    ],
+    "biometric_flags": [
+      "stable_hr",
+      "normal_respiration"
+    ]
+  }
+}

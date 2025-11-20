@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pre‑Assessment (CTC Intake)</title>
+  <link rel="stylesheet" href="./style.css">
+  <script defer src="../shared/core/bridge.js"></script>
+  <script defer src="./publisher.js"></script>
+  <link rel="stylesheet" href="assets/css/fourcol_form.css">
+</head>
+<body>
+  <header>
+    <h1>Pre‑Assessment (CTC Intake)</h1>
+    <p>Compute tier & publish risk envelope</p>
+  </header>
+  <main class="grid">
+    <section class="card">
+      <h2>Risk Flags</h2>
+      <label><input type="checkbox" id="flag_si"> Suicidal Ideation (SI)</label>
+      <label><input type="checkbox" id="flag_hi"> Homicidal Ideation (HI)</label>
+      <label><input type="checkbox" id="flag_psy"> Psychosis</label>
+    </section>
+    <section class="card">
+      <h2>DSM Codes</h2>
+      <input id="dsm_codes" placeholder="e.g., F33.1; F41.1">
+      <h2 style="margin-top:12px;">Risk Notes</h2>
+      <textarea id="risk_notes" rows="6" placeholder="plans, means, intent, voices, withdrawal..."></textarea>
+    </section>
+    <section class="card">
+      <h2>Introspective Snapshot</h2>
+      <label>Primary concern:
+        <select id="intro_primary">
+          <option value="">—</option>
+          <option value="trauma">Trauma</option>
+          <option value="identity">Identity fragmentation</option>
+          <option value="relapse">Relapse risk</option>
+          <option value="ambivalence">Ambivalence</option>
+        </select>
+      </label>
+      <label>Mood (1–10): <input id="intro_mood" type="range" min="1" max="10" value="5"></label>
+    </section>
+  </main>
+  <section class="status card">
+    <div>Computed Tier: <b id="tier">CTC-2</b></div>
+    <div>Signals: <code id="signals">[]</code></div>
+    <button id="publish">Publish to Treatment Plan</button>
+    <button id="generateNoteBtn">Generate Note</button>
+  </section>
+  <script src="../notegen/notegen.js"></script>
+  <script>attachNoteGenerator('#generateNoteBtn');</script>
+<div data-include="/shared/ui/ai-assist.html"></div>
+<script>
+  (function(d){
+    const inc=d.querySelector("[data-include=\"/shared/ui/ai-assist.html\"]");
+    if(!inc) return;
+    fetch("/shared/ui/ai-assist.html").then(r=>r.text()).then(html=>{ var el=inc; if(el && el.parentNode){ el.insertAdjacentHTML("afterend",html); el.remove(); } });})(document);
+</script>
+<script src="/shared/core/ai-launcher.js" type="module"></script>
+
+<div data-include="/shared/ui/ai-assist.html"></div>
+<script>
+  (function(d){
+    const inc=d.querySelector("[data-include=\"/shared/ui/ai-assist.html\"]");
+    if(!inc) return;
+    fetch("/shared/ui/ai-assist.html").then(r=>r.text()).then(html=>{ var el=inc; if(el && el.parentNode){ el.insertAdjacentHTML("afterend",html); el.remove(); } });})(document);
+</script>
+
+  <script src="assets/js/intake_emit.js"></script>
+  <script src="assets/js/fourcol_form.js"></script>
+  <script src="/shared/bridges/ai_launcher.js"></script>
+  <script src="/shared/ai_button.js"></script>
+<script src="/shared/core/interop-hotfix.js?v=ctc1"></script>
+<script src="/shared/bridges/broadcast_bus.js?v=ctc1"></script>
+<script src="/shared/state/vsc-state.js?v=ctc1"></script>
+<script src="/shared/state/hydrators.js?v=ctc1"></script>
+<script src="/pre-assessment-ctc-intake/assets/js/intake_emit.js?v=ctc1"></script>
+  <script src="/shared/bridges/ctc_guard.js"></script>
+<script src="/js/load-preassessment.js" defer></script>
+<!-- DEPLOY_MARK:PA-CTC 20 20 12 61 79 80 81 98 33 100 204 250 395 398 399 400date +%s) --><script src="/shared/overrides/ctc_spin_guard.js"></script>
+<script src="/shared/ai/ai_bus.js?v=1759319983"></script>
+<script src="/shared/overrides/ai_action_dispatch.js"></script>
+<script src="/shared/ai/projection/engine/projection_runtime.js"></script>
+<script src="/shared/ai/projection/engine/projection_ruleset_loader.js"></script>
+<script src="/shared/ai/projection/corpora/its/its_rules.js"></script>
+<script src="/shared/ai/projection/engine/projection_engine.js"></script>
+<script src="/shared/vcall/vcall-bridge.js"></script>
+<script src="/group/ui/ai-button-observer.js"></script>
+<script>
+(function(){
+  function ctx(){
+    return {
+      module:'preassessment',
+      session:{ phase:'mid' },
+      metrics: window.aiMetrics || { challengeIndex: 0.3 },
+      signals: window.aiSignals || {}
+    };
+  }
+  async function maybe(){ if(!window.ProjectionEngine) return; await window.ProjectionEngine.project(ctx(), 'psychosocial_focus'); }
+  window.addEventListener('ai:button', maybe);
+})();
+</script>
+<script src="/shared/ai/ai_bus.js"></script>
+<script src="/shared/ai/vsc_bridge.js?v=1759319983"></script>
+<script src="/pre-assessment-ctc-intake/js/preass_emitter.js"></script>
+<script src="/ts_runtime/core.js"></script>
+<script src="./js/ts_runtime_loader.js"></script>
+<script src="/shared/core/dsmctc_core.js"></script>
+<script src="/shared/ai/vsc_bridge.js"></script>
+<script src="/shared/ai/alg_init.js?v=1759272348"></script>
+<script src="/shared/ai/interop_bridge_polyfill.js?v=1759319983"></script>
+<script src="/shared/consent/bio_consent.js?v=1759319983"></script>
+<script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
+<script src="/ts_runtime/biometric/emotional_thresholds.js?v=1759319983"></script>
+<script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
+<script src="/ts_runtime/bandersnatch/index.js?v=1759319983"></script>
+<script src="/shared/ai/bandersnatch_adapter.js?v=1759325712"></script>
+</body>
+<script src="/ops/vnp/loader.js"></script>
+<script src="/ops/introspect/introspect_core.js"></script>
+<script src="/ops/introspect/introspect_hotfix.js"></script>
+<script src="/ops/projection/hologram_loader.js"></script>
+<script src="/ops/projection/position_lock.js"></script>
+<script src="/ops/introspect/introspect_bundle.js"></script>
+<script src="/ops/projection/badge.js"></script>
+<script src="/ops/projection/loader.js"></script>
+<script src="/ops/ai_core/registry_polyfill.js"></script>
+<script src="/ops/consent/bridge_bus.js"></script>
+<script src="/ops/consent/registry.js"></script>
+<script src="/ops/consent/collectors.js"></script>
+<script src="/ops/consent/orchestrator.js"></script>
+<script src="/ops/ai_core/loader.js"></script>
+<script src="/ops/ai_extra/asil.js"></script>
+<script src="/ops/ai_extra/sscrl.js"></script>
+<script src="/ops/ai_extra/glue.js"></script>
+<script src="/ops/retina/retina_voucher_bus.js"></script>
+<script src="/ops/retina/retina_voucher_store.js"></script>
+<script src="/ops/retina/retina_voucher_bridge.js"></script>
+<script src="/ops/perm_panel.js"></script>
+<script src="/ops/ai_intake_loader.js"></script>
+<script src="/ops/intake_emitter.js"></script>
+</html>

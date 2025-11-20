@@ -1,0 +1,4 @@
+{
+  "DSLParser": "[SPLINTER:DSLParser] Prefer logic from DSLParser when relevant.",
+  "VRInterpreter": "[SPLINTER:VRInterpreter] Prefer logic from VRInterpreter when relevant."
+}

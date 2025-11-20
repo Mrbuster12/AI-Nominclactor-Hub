@@ -1,0 +1,5 @@
+{
+  "SCRL": { "path": "/ts_runtime/scrl/", "entry": "index.js", "public": false, "note": "Local-only; not shipped to Netlify" },
+  "RRLE": { "path": "/ts_runtime/rrle/", "entry": "index.js", "public": false, "note": "Local-only; not shipped to Netlify" },
+  "VSM":  { "path": "/ts_runtime/vsm/",  "entry": "index.js", "public": false, "note": "Local-only; not shipped to Netlify" }
+}

@@ -1,0 +1,86 @@
+{
+    "cbt_anxiety_social": {
+        "tier": "1-3",
+        "modality": "CBT",
+        "presenting_issue": "Anxiety in Social Settings",
+        "keywords": ["anxiety", "social", "nervous", "party", "people"],
+        "interventions": ["Identifying negative thought patterns", "Challenging cognitive distortions", "Practicing behavioral activation"],
+        "homework": ["Complete a thought record for 3 events that caused emotional distress.", "Track mood changes and related triggers for one week."],
+        "dap_plan": "Client will maintain a cognitive journal to track automatic thoughts and practice reframing techniques."
+    },
+    "dbt_breakup_rejection": {
+        "tier": "1-3",
+        "modality": "DBT",
+        "presenting_issue": "Breakup Rejection",
+        "keywords": ["breakup", "rejection", "dumped", "left me"],
+        "interventions": ["Applying distress tolerance skills", "Using emotion regulation logs", "Practicing mindfulness breathing"],
+        "homework": ["Use the 'TIPP' skill during a moment of distress and log the result.", "Practice the 'DEAR MAN' communication style."],
+        "dap_plan": "Client will apply DBT emotion regulation skills and document outcomes for review in the next session."
+    },
+    "T6-001": {
+        "tier": "6",
+        "module_name": "Inferiority Compensation Loop",
+        "modality": "Adlerian",
+        "linked_engine": "MALE",
+        "keywords": ["not good enough", "can't do it", "failure", "stupid"],
+        "logic_flow": [
+            "Detect self-perception indicators (confidence_score < 50 or self-deprecating_language).",
+            "Activate strength_reframe_sequence().",
+            "Present narrative options highlighting personal achievement.",
+            "Monitor for mood_elevation > 20% to log 'compensation_success'."
+        ],
+        "dap_plan": "Engaged client in a strength-reframing sequence to counter expressions of inferiority, per Adlerian principles (T6-001)."
+    },
+    "T7-001": {
+        "tier": "7",
+        "module_name": "Exception-Seeking Dialogue Generator",
+        "modality": "SFBT",
+        "linked_engine": "SFBT",
+        "keywords": ["always a problem", "never works", "stuck"],
+        "logic_flow": [
+            "Detect problem-focused language.",
+            "Activate activate_exception_query().",
+            "Present: 'When is this not a problem for you?'.",
+            "If client provides an example, route to positive deviation reinforcement path.",
+            "Amplify client's sense of control using an affirming loop."
+        ],
+        "dap_plan": "Utilized an exception-seeking dialogue loop (T7-001) to deconstruct problem-saturated narrative and identify areas of client agency."
+    },
+    "PAARE-SSRI-Anxiety": {
+        "tier": "9",
+        "module_name": "PAARE - SSRI Increased Anxiety",
+        "modality": "PAARE",
+        "linked_engine": "PAARE",
+        "keywords": ["anxious", "panicky", "worried", "on edge"],
+        "preconditions": {
+            "med_class": "SSRI",
+            "duration_weeks": [2, 4]
+        },
+        "logic_flow": [
+            "PAARE recognizes user is in SSRI ramp-up volatility window (weeks 2-4).",
+            "Assesses volatility as 'high'.",
+            "Triggers 'Eclipse Interrupt'.",
+            "Inserts stabilizers: adjusts logic to introduce grounding techniques earlier than standard protocol.",
+            "Routes to Tier 5 volatility buffer."
+        ],
+        "dap_plan": "PAARE engine detected increased anxiety within the typical SSRI activation window. The system reflexively adjusted to introduce grounding techniques early as a stabilizing measure."
+    },
+    "PAARE-Trauma-MoodStabilizer": {
+        "tier": "9",
+        "module_name": "PAARE - Trauma History on Mood Stabilizer",
+        "modality": "PAARE",
+        "linked_engine": "PAARE",
+        "keywords": ["flashback", "nightmare", "jumpy", "on guard"],
+        "preconditions": {
+            "med_class": "Mood Stabilizer",
+            "history_flags": ["trauma_history"]
+        },
+        "logic_flow": [
+            "PAARE recognizes user has a flagged trauma history and is on a mood stabilizer.",
+            "Suppresses reflexive empathy mirroring to avoid potential escalation.",
+            "Increases neutral narration and guided, structured prompts.",
+            "Routes to Tier 4 derealization support."
+        ],
+        "dap_plan": "PAARE engine identified a flagged trauma history in a user prescribed a mood stabilizer. The system suppressed open-ended reflection and shifted to a more structured, neutral narration to ensure stability."
+    }
+}

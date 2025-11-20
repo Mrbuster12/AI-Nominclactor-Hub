@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>CTC Modular Hub</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;padding:16px}
+    h1{margin-top:8px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:12px}
+    a.card{display:block;padding:16px;border:1px solid #ddd;border-radius:12px;text-decoration:none;color:#111;background:#fafafa}
+    a.card:hover{background:#f0f0ff;border-color:#cde}
+    small{color:#555}
+  </style>
+</head>
+<body>
+  <h1>CTC Modular Hub</h1>
+  <p><small>Ephemeral key will be propagated in URL (#k) and bridge auto-enforced.</small></p>
+
+  <div class="grid">
+    <a class="card" href="/assessment-core/?bridge=1">DSM → CTC (Core)</a>
+    <a class="card" href="/treatment-plan-auto/index.html">Treatment Plan</a>
+    <a class="card" href="/mse/">MSE</a>
+    <a class="card" href="/psychosocial/">Biopsychosocial</a>
+    <a class="card" href="/vsc/?bridge=1">Virtual Simulation Coach (VSC)</a>
+    <!-- Added Group Therapy Module link -->
+    <a class="card" href="/group/?bridge=1">Group Therapy Module</a>
+    <a class="card" href="/vnp/"> Psychiatric Evaluation (VNP) </a>
+  </div>
+
+  <script src="/shared/key-propagation.js?v=5"></script>
+  <!-- Interop hotfix wiring: publisher/consumer for cross‑module triggers -->
+  <script src="/shared/core/interop-hotfix.js"></script>
+
+  <section class="module-card" style="max-width:960px;margin:24px auto;padding:16px;border:1px solid #1f2937;border-radius:16px;background:#111827;color:#e5e7eb;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
+    <h2 style="margin:0 0 8px 0;font-size:20px;">AI Nominclactor</h2>
+    <p style="margin:0 0 12px 0;line-height:1.4;">Prototype AI clinician module for pre-assessment and psychiatric evaluation scaffolding.</p>
+    <p style="margin:0;"><a href='/ai-nominclactor/' style='display:inline-block;text-decoration:none;padding:10px 14px;border-radius:10px;border:1px solid #374151;background:#1f2937;color:#e5e7eb;'>Open module →</a></p>
+  </section>
+
+<section class="card"><h2 style="margin:0 0 8px 0;font-size:18px">Modules</h2>
+<p style="margin:8px 0"><a class="btn" href="/releases-consents/">Releases / Consents</a></p>
+<p style="margin:8px 0"><a class="btn" href="/residential/">Residential</a></p>
+<p style="margin:8px 0"><a class="btn" href="/outpatient/">Outpatient</a></p>
+<p style="margin:8px 0"><a class="btn" href="/group-sessions/">Group Sessions</a></p>
+<p style="margin:8px 0"><a class="btn" href="/case-management/">Case Management</a></p>
+<p style="margin:8px 0"><a class="btn" href="/utilization-review/">Utilization Review</a></p>
+<p style="margin:8px 0"><a class="btn" href="/discharge-planning/">Discharge Planning</a></p>
+<p style="margin:8px 0"><a class="btn" href="/assessments/">Assessments</a></p>
+<p style="margin:8px 0"><a class="btn" href="/medical/">Medical</a></p>
+<p style="margin:8px 0"><a class="btn" href="/labs/">Labs</a></p>
+<p style="margin:8px 0"><a class="btn" href="/doctor-psych-eval/">Doctor & Psych Eval</a></p>
+<p style="margin:8px 0"><a class="btn" href="/progress-notes/">Progress Notes</a></p>
+<p style="margin:8px 0"><a class="btn" href="/family/">Family</a></p>
+<p style="margin:8px 0"><a class="btn" href="/mse/">Mental Status Exam</a></p>
+</section>
+  <script src="/shared/bridges/hub_bridge.js"></script>
+  <script src="/shared/bridges/ai_launcher.js"></script>
+  <script src="/shared/bridges/broadcast_bus.js"></script>
+  <script src="/shared/ai_button.js"></script>
+  <script src="/shared/ai/ai_bus.js?v=1759319983"></script>
+  <script src="/shared/overrides/ai_action_dispatch.js"></script>
+
+<script src="/shared/vcall/vcall-bridge.js"></script>
+<script src="/group/ui/ai-button-observer.js"></script>
+<script src="/shared/ai/vsc_bridge.js?v=1759319983"></script>
+<script src="/shared/ai/interop_bridge_polyfill.js?v=1759319983"></script>
+<script src="/shared/consent/bio_consent.js?v=1759319983"></script>
+<script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
+<script src="/ts_runtime/biometric/emotional_thresholds.js?v=1759319983"></script>
+<script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
+<script src="/ts_runtime/bandersnatch/index.js?v=1759319983"></script>
+</body>
+</html>

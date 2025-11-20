@@ -1,0 +1,31 @@
+{
+  "enabled": true,
+  "default_policy": "baseline",
+  "policies": {
+    "baseline": {
+      "rulesets": [
+        "its:edl",
+        "its:cces"
+      ],
+      "cooldowns": {
+        "edl": 180,
+        "cces": 300
+      },
+      "max_per_session": 5
+    },
+    "psychosocial_focus": {
+      "rulesets": [
+        "its:edl",
+        "its:rfd",
+        "its:sbep",
+        "tier:2"
+      ],
+      "cooldowns": {
+        "edl": 120,
+        "rfd": 240,
+        "sbep": 300
+      },
+      "max_per_session": 7
+    }
+  }
+}

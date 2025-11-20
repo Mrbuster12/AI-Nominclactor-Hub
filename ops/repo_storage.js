@@ -1,0 +1,9 @@
+(()=>{const styleBase={position:"fixed",padding:"6px 10px",font:"12px system-ui",borderRadius:"10px",boxShadow:"0 2px 8px rgba(0,0,0,.35)",zIndex:999999,opacity:.95};
+document.title="🛡️ [STORAGE] VSC Repository (PPI Vault) — VSC";
+const save=(k,o)=>{const a=JSON.parse(localStorage.getItem(k)||"[]");a.push({...o,_saved:new Date().toISOString()});localStorage.setItem(k,JSON.stringify(a))};
+try{const ch=new BroadcastChannel("preassessment-repo");ch.onmessage=(ev)=>{const{type,payload}=ev.data||{};if(!type)return;if(type==="assessment.seed")save("vsc:preassessment:seed",payload);if(type==="consent.signed")save("vsc:preassessment:consent",payload);if(type==="ai.results")save("vsc:ai:results:repo",payload);if(type==="ai.voucher.ready")save("vsc:ai:vouchers",payload);console.log("[repo] ←",type,payload);updateHUD()};console.log("[repo] BC listening (preassessment-repo)")}catch(e){console.warn("[repo] BC unavailable",e)}
+let hud=document.getElementById("vsc-ai-hud");if(!hud){hud=document.createElement("div");hud.id="vsc-ai-hud";Object.assign(hud.style,{...styleBase,bottom:"12px",left:"12px",background:"#222",color:"#fff"});hud.textContent="AI: —";document.body.appendChild(hud)}
+function updateHUD(){const arr=JSON.parse(localStorage.getItem("vsc:ai:results:repo")||"[]");const r=arr[arr.length-1];const v=JSON.parse(localStorage.getItem("vsc:ai:vouchers")||"[]").slice(-1)[0];const lvl=r?.asam?.level||"—";const ctc=r?.dsm?.ctc||"—";hud.textContent=`AI → ASAM: ${lvl} • CTC: ${ctc} • Voucher: ${v?.token||"—"}`}
+updateHUD();
+document.getElementById("vsc-repo-badge")?.remove();const tag=document.createElement("div");tag.id="vsc-repo-badge";tag.textContent="🛡️ VSC Repository (Storage)";Object.assign(tag.style,{...styleBase,top:"10px",left:"10px",background:"#333",color:"#fff"});document.body.appendChild(tag);document.documentElement.style.outline="4px solid rgba(76,175,80,.65)";
+})();

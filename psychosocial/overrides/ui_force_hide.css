@@ -1,0 +1,9 @@
+/* Force-hide the BPIRL button and obsolete dropdowns */
+#bpirl-button,
+#bpirl-split-dropdown,
+.bpirl-split-dropdown,
+.dropdown,
+select {
+  display: none !important;
+  visibility: hidden !important;
+}

@@ -1,0 +1,4 @@
+{
+  "promptPrefix": "Educational simulation. Do not provide diagnosis or treatment. Summarize observations only.",
+  "crisisNotice": "Crisis content detected. Provide crisis resources only."
+}

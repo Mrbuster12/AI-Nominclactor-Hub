@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<script>
+// EARLY DX GUARD: define getters so any access won't throw and pulls from inputs if present
+(function(){
+  function val(id){ var el=document.getElementById(id); return el ? (el.value||'').trim() : ''; }
+  var defs = {
+    dxPrimary: 'Unspecified condition',
+    dxCode: 'R69',
+    dxSeverity: 'unspecified',
+    dxSpecifiers: '',
+    dxRuleOuts: '',
+    nextReview: ''
+  };
+  Object.keys(defs).forEach(function(k){
+    if (!Object.getOwnPropertyDescriptor(window,k)) {
+      try {
+        Object.defineProperty(window,k,{
+          configurable:true,
+          get: function(){ return (window['__'+k]!==undefined ? window['__'+k] : (val(k) || defs[k])); },
+          set: function(v){ window['__'+k]=v; }
+        });
+      } catch(e){ window[k]=defs[k]; }
+    }
+  });
+})();
+</script>
+<meta charset="utf-8"/>
+<title>VSC Interactive Documentation Engine</title>
+<style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+        .container { background: white; padding: 20px; border-radius: 10px; max-width: 1000px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        select, button, input, textarea { width: 100%; margin-top: 10px; padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
+        .output, .dialogue { margin-top: 20px; background: #eef; padding: 15px; border-radius: 8px; }
+        label { font-weight: bold; margin-top: 20px; display: block; }
+        ul { padding-left: 20px; }
+    </style>
+<link rel="stylesheet" href="/shared/ui/psychosocial_overrides.css?v=1759333140">
+<link rel="stylesheet" href="/shared/ui/overlay_fixes.css?v=1759333839">
+</head>
+<body>
+<div id="aiBanner" style="position:fixed;top:0;left:0;width:100%;background:rgb(34,34,34);color:white;font:16px/1.5 system-ui,sans-serif;text-align:center;padding:8px;z-index:100000;">AI Engine Active — Virtual Simulated Clinician</div>
+
+<div class="container">
+<h1>VSC Interactive Documentation Engine</h1>
+<label for="scenario">Select a Scenario:</label>
+<select id="scenarioSelect" onchange="loadScenarioDetails()"></select>
+<div id="scenarioDetails" style="margin-top: 20px;"></div>
+<div class="dialogue">
+<h3>Scenario Dialogue</h3>
+<ul id="dialogueList"></ul>
+</div>
+<label for="biometric">Biometric Concordance:</label>
+<select id="biometric">
+<option value="High">High Concordance</option>
+<option value="Moderate">Moderate Concordance</option>
+<option value="Low">Low Concordance</option>
+</select>
+<label for="signature">Client Signature:</label>
+<input id="signature" placeholder="Type full name" type="text"/>
+<button onclick="generateOutput()">Generate Documentation</button>
+<div class="output">
+<h3>Session Output</h3>
+<textarea id="outputBox" readonly=""></textarea>
+</div>
+</div>
+<script>
+let scenarios = {};
+let dialogues = {};
+const BASE = new URL('.', window.location.href);
+
+// Global error capture
+window.addEventListener('error', (e) => {
+  console.error('Runtime error:', e.message, e.error);
+  const out = document.getElementById('outputBox');
+  if (out) out.value = (out.value || '') + '\n[Error] ' + e.message;
+});
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('Unhandled promise rejection:', e.reason);
+  const out = document.getElementById('outputBox');
+  if (out) out.value = (out.value || '') + '\n[Promise] ' + e.reason;
+});
+
+
+Promise.all([
+    fetch(new URL('vsc_scenarios.json', BASE)).then(r => { if(!r.ok) throw new Error('scenarios.json HTTP '+r.status); return r.json(); }),
+    fetch(new URL('vsc_dialogue.json', BASE)).then(r => { if(!r.ok) throw new Error('dialogue.json HTTP '+r.status); return r.json(); })
+]).then(([scenarioData, dialogueData]) => {
+    scenarios = scenarioData;
+    dialogues = dialogueData;
+    const select = document.getElementById("scenarioSelect");
+    for (let key in scenarios) {
+        let option = document.createElement("option");
+        option.value = key;
+        option.textContent = scenarios[key].title;
+        select.appendChild(option);
+        select.addEventListener("change", () => { localStorage.setItem("selectedScenario", select.value); });
+    }
+    const savedKey = localStorage.getItem("selectedScenario");
+    if (savedKey && scenarios[savedKey]) { select.value = savedKey; }
+    if (!select.value && select.options.length) { select.selectedIndex = 0; }
+    loadScenarioDetails();
+});
+
+function loadScenarioDetails() {
+    const selectEl = document.getElementById("scenarioSelect");
+    if (!selectEl || !selectEl.value || !scenarios[selectEl.value]) { return; }
+    const key = document.getElementById("scenarioSelect").value;
+    const data = scenarios[key];
+    const convo = dialogues[key] || [];
+    let html = "<p><strong>Description:</strong> " + data.description + "</p>";
+    html += "<p><strong>Goals:</strong><ul>" + data.goals.map(g => "<li>" + g + "</li>").join("") + "</ul></p>";
+    html += "<p><strong>SCRL Checkpoints:</strong> " + data.scrl_checkpoints.join(", ") + "</p>";
+    html += "<p><strong>Biometric Flags:</strong> " + data.biometric_flags.join(", ") + "</p>";
+    document.getElementById("scenarioDetails").innerHTML = html;
+
+    let convoHtml = convo.map(turn => `<li><strong>${turn.role}:</strong> ${turn.text}</li>`).join("");
+    document.getElementById("dialogueList").innerHTML = convoHtml;
+}
+
+function generateOutput() {
+    const key = document.getElementById("scenarioSelect").value;
+    const data = scenarios[key];
+    const convo = dialogues[key] || [];
+    const biometric = document.getElementById("biometric").value;
+    const signature = document.getElementById("signature").value;
+    const timestamp = new Date().toLocaleString();
+
+    let confidence;
+    switch (biometric) {
+        case "High": confidence = "95% – Strong alignment"; break;
+        case "Moderate": confidence = "70% – Partial alignment"; break;
+        case "Low": confidence = "40% – Significant discrepancy"; break;
+    }
+
+    const output = `Timestamp: ${timestamp}\nScenario: ${data.title}\nDescription: ${data.description}\n\nTreatment Goals:\n- ` +
+        data.goals.join("\n- ") + `\n\nSCRL Checkpoints: ` + data.scrl_checkpoints.join(", ") +
+        `\nBiometric Concordance: ${biometric}\nFlags: ` + data.biometric_flags.join(", ") +
+        `\nConfidence Score: ${confidence}\n\nDialogue Transcript:` +
+        convo.map(turn => `\n${turn.role}: ${turn.text}`).join("") +
+        `\n\nClient Signature: ${signature}\n\nSession validated and DAP note logged.`;
+
+    document.getElementById("outputBox").value = output;
+    window.__sessionData = {
+      timestamp,
+      scenario_key: key,
+      scenario_title: data.title,
+      clinician_style: clinician,
+      description: data.description,
+      goals: data.goals,
+      scrl_checkpoints: data.scrl_checkpoints,
+      biometric_concordance: biometric,
+      biometric_flags: data.biometric_flags,
+      confidence_score: confidence,
+      dialogue_scripted: convo,
+      transcript_live: live,
+      billing: {
+        cpt_code: cptCode,
+        session_start: sessionStart,
+        session_end: sessionEnd,
+        duration: sessionDuration,
+        next_appointment: nextAppt
+      },
+      diagnosis: {
+        primary: dxPrimary,
+        code: dxCode,
+        severity: dxSeverity,
+        specifiers: dxSpecifiers ? dxSpecifiers.split(/\s*,\s*/).filter(Boolean) : [],
+        rule_outs: dxRuleOuts ? dxRuleOuts.split(/\s*,\s*/).filter(Boolean) : [],
+        next_review: nextReview
+      },
+      DAP: {
+        data: dapData,
+        assessment: dapAssessment,
+        plan: dapPlan
+      },
+      signature
+    };
+    alert("Session note generated and unified. You can download TXT or export JSON now.");
+
+}
+</script>
+<!-- Clinician and Treatment Selector -->
+<div class="container">
+<h2>Select Clinician Style and Treatment Modality</h2>
+<select id="clinicianSelect">
+
+
+
+
+<option value="">Select DSM Specifier…</option><option value="dsm_currently_in_acute_episode">Currently in acute episode</option><option value="dsm_first_episode">First episode</option><option value="dsm_most_recent_episode_manic">Most recent episode manic</option><option value="dsm_with_anxious_distress">With anxious distress</option><option value="dsm_with_delayed_expression">With delayed expression</option><option value="dsm_with_dissociative_symptoms">With dissociative symptoms</option><option value="dsm_with_good_or_fair_insight">With good or fair insight</option><option value="dsm_with_language_impairment">With language impairment</option><option value="dsm_with_melancholic_features">With melancholic features</option><option value="dsm_with_or_without_intellectual_impairment">With or without intellectual impairment</option><option value="dsm_with_panic_attacks">With panic attacks</option><option value="dsm_with_psychotic_features">With psychotic features</option><option value="dsm_with_transient_stress_related_paranoid_ideation">With transient stress-related paranoid ideation</option></select>
+</div>
+<!-- Microphone Input -->
+<div class="container">
+<h2>Speak to the VSC</h2>
+<button onclick="startListening()">🎤 Start Talking</button>
+<p id="micOutput"></p>
+</div>
+<!-- Simulated Session Note Output -->
+<div class="container">
+<div class="container">
+<h2>Clinical Note (D/A/P)</h2>
+<label for="dapData">Data (objective/subjective):</label>
+<textarea id="dapData" placeholder="Presenting concerns, observations, client statements..." rows="4"></textarea>
+<label for="dapAssessment">Assessment (clinical formulation):</label>
+<textarea id="dapAssessment" placeholder="Clinical impression, risk, diagnosis linkages..." rows="4"></textarea>
+<label for="dapPlan">Plan (interventions &amp; homework):</label>
+<textarea id="dapPlan" placeholder="Interventions provided, assigned tasks, follow-up date..." rows="4"></textarea>
+</div>
+<h2>Session Note Output (Unified)</h2>
+<textarea id="sessionNote" readonly="" rows="14"></textarea>
+<button id="downloadBtn" onclick="downloadNotes()">Download Note (.txt)</button>
+<button id="exportJsonBtn" onclick="downloadJSON()">Export Session (.json)</button>
+</div>
+<!-- Homework Assignment Links with TTS -->
+<div class="container">
+<h2>Suggested Homework</h2>
+<ul>
+<li><a href="homework/CBT_Grief_After_Loss.pdf" target="_blank">CBT - Grief After Loss</a> <button onclick="speakText('Your homework is Grief After Loss from CBT perspective.')">🔊</button></li>
+<li><a href="homework/DBT_Grief_After_Loss.pdf" target="_blank">DBT - Grief After Loss</a> <button onclick="speakText('Your homework is Grief After Loss from DBT perspective.')">🔊</button></li>
+<li><a href="homework/CBT_Divorce_Recovery.pdf" target="_blank">CBT - Divorce Recovery</a> <button onclick="speakText('Your homework is Divorce Recovery from CBT perspective.')">🔊</button></li>
+<li><a href="homework/DBT_Divorce_Recovery.pdf" target="_blank">DBT - Divorce Recovery</a> <button onclick="speakText('Your homework is Divorce Recovery from DBT perspective.')">🔊</button></li>
+</ul>
+</div>
+<!-- JavaScript for Mic + TTS -->
+<script>
+function startListening() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    alert("Microphone not supported in this browser. Use Chrome or Edge, or skip voice input.");
+    return;
+  }
+  if (location.protocol !== "https:" && location.hostname !== "localhost") {
+    alert("Voice capture requires HTTPS or localhost. Deploy to Netlify or run locally to use the mic.");
+    return;
+  }
+  const recognition = new SR();
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript;
+    const micOut = document.getElementById('micOutput');
+    if (micOut) micOut.innerText = transcript;
+    const sn = document.getElementById('sessionNote');
+    if (sn) sn.value += '\nClient said: ' + transcript;
+  };
+  recognition.start();
+}
+
+function speakText(text) {
+  const utterance = new SpeechSynthesisUtterance(text);
+  speechSynthesis.speak(utterance);
+}
+</script>
+<div class="container">
+<h2>📚 Full Homework Library</h2>
+<ul>
+<li><a href="homework/CBT_Anxiety_in_Social_Settings.pdf" target="_blank">CBT Anxiety in Social Settings</a>
+<button onclick="speakText('Your homework assignment is CBT Anxiety in Social Settings.')">🔊</button></li>
+<li><a href="homework/CBT_Breakup_Rejection.pdf" target="_blank">CBT Breakup Rejection</a>
+<button onclick="speakText('Your homework assignment is CBT Breakup Rejection.')">🔊</button></li>
+<li><a href="homework/CBT_Career_Stress.pdf" target="_blank">CBT Career Stress</a>
+<button onclick="speakText('Your homework assignment is CBT Career Stress.')">🔊</button></li>
+<li><a href="homework/CBT_Childhood_Trauma_Disclosure.pdf" target="_blank">CBT Childhood Trauma Disclosure</a>
+<button onclick="speakText('Your homework assignment is CBT Childhood Trauma Disclosure.')">🔊</button></li>
+<li><a href="homework/CBT_Disclosure_of_Abuse.pdf" target="_blank">CBT Disclosure of Abuse</a>
+<button onclick="speakText('Your homework assignment is CBT Disclosure of Abuse.')">🔊</button></li>
+<li><a href="homework/CBT_Divorce_Recovery.pdf" target="_blank">CBT Divorce Recovery</a>
+<button onclick="speakText('Your homework assignment is CBT Divorce Recovery.')">🔊</button></li>
+<li><a href="homework/CBT_Early_Sobriety_Support.pdf" target="_blank">CBT Early Sobriety Support</a>
+<button onclick="speakText('Your homework assignment is CBT Early Sobriety Support.')">🔊</button></li>
+<li><a href="homework/CBT_Family_Conflict.pdf" target="_blank">CBT Family Conflict</a>
+<button onclick="speakText('Your homework assignment is CBT Family Conflict.')">🔊</button></li>
+<li><a href="homework/CBT_Fear_of_Failure.pdf" target="_blank">CBT Fear of Failure</a>
+<button onclick="speakText('Your homework assignment is CBT Fear of Failure.')">🔊</button></li>
+<li><a href="homework/CBT_Feeling_Overwhelmed.pdf" target="_blank">CBT Feeling Overwhelmed</a>
+<button onclick="speakText('Your homework assignment is CBT Feeling Overwhelmed.')">🔊</button></li>
+<li><a href="homework/CBT_Gratitude_Resistance.pdf" target="_blank">CBT Gratitude Resistance</a>
+<button onclick="speakText('Your homework assignment is CBT Gratitude Resistance.')">🔊</button></li>
+<li><a href="homework/CBT_Grief_After_Loss.pdf" target="_blank">CBT Grief After Loss</a>
+<button onclick="speakText('Your homework assignment is CBT Grief After Loss.')">🔊</button></li>
+<li><a href="homework/CBT_Isolation_and_Loneliness.pdf" target="_blank">CBT Isolation and Loneliness</a>
+<button onclick="speakText('Your homework assignment is CBT Isolation and Loneliness.')">🔊</button></li>
+<li><a href="homework/CBT_Medical_Diagnosis_Shock.pdf" target="_blank">CBT Medical Diagnosis Shock</a>
+<button onclick="speakText('Your homework assignment is CBT Medical Diagnosis Shock.')">🔊</button></li>
+<li><a href="homework/CBT_Obsessive_Thinking.pdf" target="_blank">CBT Obsessive Thinking</a>
+<button onclick="speakText('Your homework assignment is CBT Obsessive Thinking.')">🔊</button></li>
+<li><a href="homework/CBT_Overwhelmed_Parent.pdf" target="_blank">CBT Overwhelmed Parent</a>
+<button onclick="speakText('Your homework assignment is CBT Overwhelmed Parent.')">🔊</button></li>
+<li><a href="homework/CBT_Pet_Loss_Grief.pdf" target="_blank">CBT Pet Loss Grief</a>
+<button onclick="speakText('Your homework assignment is CBT Pet Loss Grief.')">🔊</button></li>
+<li><a href="homework/CBT_Post-Discharge_Relapse.pdf" target="_blank">CBT Post-Discharge Relapse</a>
+<button onclick="speakText('Your homework assignment is CBT Post-Discharge Relapse.')">🔊</button></li>
+<li><a href="homework/CBT_School_Refusal.pdf" target="_blank">CBT School Refusal</a>
+<button onclick="speakText('Your homework assignment is CBT School Refusal.')">🔊</button></li>
+<li><a href="homework/CBT_Self-Harm_Risk.pdf" target="_blank">CBT Self-Harm Risk</a>
+<button onclick="speakText('Your homework assignment is CBT Self-Harm Risk.')">🔊</button></li>
+<li><a href="homework/CBT_Sexual_Identity_Exploration.pdf" target="_blank">CBT Sexual Identity Exploration</a>
+<button onclick="speakText('Your homework assignment is CBT Sexual Identity Exploration.')">🔊</button></li>
+<li><a href="homework/CBT_Spiritual_Crisis.pdf" target="_blank">CBT Spiritual Crisis</a>
+<button onclick="speakText('Your homework assignment is CBT Spiritual Crisis.')">🔊</button></li>
+<li><a href="homework/CBT_Trust_Issues.pdf" target="_blank">CBT Trust Issues</a>
+<button onclick="speakText('Your homework assignment is CBT Trust Issues.')">🔊</button></li>
+<li><a href="homework/CBT_Workplace_Stress.pdf" target="_blank">CBT Workplace Stress</a>
+<button onclick="speakText('Your homework assignment is CBT Workplace Stress.')">🔊</button></li>
+<li><a href="homework/CBT_Youth_Behavioral_Crisis.pdf" target="_blank">CBT Youth Behavioral Crisis</a>
+<button onclick="speakText('Your homework assignment is CBT Youth Behavioral Crisis.')">🔊</button></li>
+<li><a href="homework/DBT_Anxiety_in_Social_Settings.pdf" target="_blank">DBT Anxiety in Social Settings</a>
+<button onclick="speakText('Your homework assignment is DBT Anxiety in Social Settings.')">🔊</button></li>
+<li><a href="homework/DBT_Breakup_Rejection.pdf" target="_blank">DBT Breakup Rejection</a>
+<button onclick="speakText('Your homework assignment is DBT Breakup Rejection.')">🔊</button></li>
+<li><a href="homework/DBT_Career_Stress.pdf" target="_blank">DBT Career Stress</a>
+<button onclick="speakText('Your homework assignment is DBT Career Stress.')">🔊</button></li>
+<li><a href="homework/DBT_Childhood_Trauma_Disclosure.pdf" target="_blank">DBT Childhood Trauma Disclosure</a>
+<button onclick="speakText('Your homework assignment is DBT Childhood Trauma Disclosure.')">🔊</button></li>
+<li><a href="homework/DBT_Disclosure_of_Abuse.pdf" target="_blank">DBT Disclosure of Abuse</a>
+<button onclick="speakText('Your homework assignment is DBT Disclosure of Abuse.')">🔊</button></li>
+<li><a href="homework/DBT_Divorce_Recovery.pdf" target="_blank">DBT Divorce Recovery</a>
+<button onclick="speakText('Your homework assignment is DBT Divorce Recovery.')">🔊</button></li>
+<li><a href="homework/DBT_Early_Sobriety_Support.pdf" target="_blank">DBT Early Sobriety Support</a>
+<button onclick="speakText('Your homework assignment is DBT Early Sobriety Support.')">🔊</button></li>
+<li><a href="homework/DBT_Family_Conflict.pdf" target="_blank">DBT Family Conflict</a>
+<button onclick="speakText('Your homework assignment is DBT Family Conflict.')">🔊</button></li>
+<li><a href="homework/DBT_Fear_of_Failure.pdf" target="_blank">DBT Fear of Failure</a>
+<button onclick="speakText('Your homework assignment is DBT Fear of Failure.')">🔊</button></li>
+<li><a href="homework/DBT_Feeling_Overwhelmed.pdf" target="_blank">DBT Feeling Overwhelmed</a>
+<button onclick="speakText('Your homework assignment is DBT Feeling Overwhelmed.')">🔊</button></li>
+<li><a href="homework/DBT_Gratitude_Resistance.pdf" target="_blank">DBT Gratitude Resistance</a>
+<button onclick="speakText('Your homework assignment is DBT Gratitude Resistance.')">🔊</button></li>
+<li><a href="homework/DBT_Grief_After_Loss.pdf" target="_blank">DBT Grief After Loss</a>
+<button onclick="speakText('Your homework assignment is DBT Grief After Loss.')">🔊</button></li>
+<li><a href="homework/DBT_Isolation_and_Loneliness.pdf" target="_blank">DBT Isolation and Loneliness</a>
+<button onclick="speakText('Your homework assignment is DBT Isolation and Loneliness.')">🔊</button></li>
+<li><a href="homework/DBT_Medical_Diagnosis_Shock.pdf" target="_blank">DBT Medical Diagnosis Shock</a>
+<button onclick="speakText('Your homework assignment is DBT Medical Diagnosis Shock.')">🔊</button></li>
+<li><a href="homework/DBT_Obsessive_Thinking.pdf" target="_blank">DBT Obsessive Thinking</a>
+<button onclick="speakText('Your homework assignment is DBT Obsessive Thinking.')">🔊</button></li>
+<li><a href="homework/DBT_Overwhelmed_Parent.pdf" target="_blank">DBT Overwhelmed Parent</a>
+<button onclick="speakText('Your homework assignment is DBT Overwhelmed Parent.')">🔊</button></li>
+<li><a href="homework/DBT_Pet_Loss_Grief.pdf" target="_blank">DBT Pet Loss Grief</a>
+<button onclick="speakText('Your homework assignment is DBT Pet Loss Grief.')">🔊</button></li>
+<li><a href="homework/DBT_Post-Discharge_Relapse.pdf" target="_blank">DBT Post-Discharge Relapse</a>
+<button onclick="speakText('Your homework assignment is DBT Post-Discharge Relapse.')">🔊</button></li>
+<li><a href="homework/DBT_School_Refusal.pdf" target="_blank">DBT School Refusal</a>
+<button onclick="speakText('Your homework assignment is DBT School Refusal.')">🔊</button></li>
+<li><a href="homework/DBT_Self-Harm_Risk.pdf" target="_blank">DBT Self-Harm Risk</a>
+<button onclick="speakText('Your homework assignment is DBT Self-Harm Risk.')">🔊</button></li>
+<li><a href="homework/DBT_Sexual_Identity_Exploration.pdf" target="_blank">DBT Sexual Identity Exploration</a>
+<button onclick="speakText('Your homework assignment is DBT Sexual Identity Exploration.')">🔊</button></li>
+<li><a href="homework/DBT_Spiritual_Crisis.pdf" target="_blank">DBT Spiritual Crisis</a>
+<button onclick="speakText('Your homework assignment is DBT Spiritual Crisis.')">🔊</button></li>
+<li><a href="homework/DBT_Trust_Issues.pdf" target="_blank">DBT Trust Issues</a>
+<button onclick="speakText('Your homework assignment is DBT Trust Issues.')">🔊</button></li>
+<li><a href="homework/DBT_Workplace_Stress.pdf" target="_blank">DBT Workplace Stress</a>
+<button onclick="speakText('Your homework assignment is DBT Workplace Stress.')">🔊</button></li>
+<li><a href="homework/DBT_Youth_Behavioral_Crisis.pdf" target="_blank">DBT Youth Behavioral Crisis</a>
+<button onclick="speakText('Your homework assignment is DBT Youth Behavioral Crisis.')">🔊</button></li>
+</ul>
+</div>
+<script>
+// --- Safety guard: ensure state.clinician exists and prevent ReferenceError ---
+(function(){
+  try {
+    window.state = window.state || {};
+    if (!state.clinician) {
+      state.clinician = {
+        profile: 'UNSET',
+        framework: 'Unknown',
+        title: 'Simulated Clinician'
+      };
+    }
+    // Provide a global alias ONLY if not already defined (prevents ReferenceError)
+    if (typeof window.clinician === 'undefined') {
+      window.clinician = state.clinician;
+    }
+    // Hook scenario select to keep state.clinician.framework in sync
+    window.addEventListener('DOMContentLoaded', function(){
+      var sel = document.getElementById('scenarioSelect');
+      if (sel) {
+        function syncFramework(){
+          try {
+            var key = sel.value;
+            if (window.scenarios && window.scenarios[key]) {
+              var title = window.scenarios[key].title || 'Unknown';
+              state.clinician.framework = title;
+              // keep alias fresh
+              window.clinician = state.clinician;
+            }
+          } catch (e) { console.warn('framework sync error', e); }
+        }
+        sel.addEventListener('change', syncFramework);
+        syncFramework();
+      }
+    });
+  } catch (e) {
+    console.warn('clinician guard failed', e);
+  }
+})();
+</script>
+<script>
+// ---- Live transcript + dialogue default patch ----
+(function(){
+  function computeLive(){
+    var mic = (document.getElementById('micOutput')?.textContent || '').trim();
+    var d = (document.getElementById('dapData')?.value || '').trim();
+    var a = (document.getElementById('dapAssessment')?.value || '').trim();
+    var p = (document.getElementById('dapPlan')?.value || '').trim();
+    var parts = [];
+    if (mic) parts.push("[MIC] " + mic);
+    if (d) parts.push("[D] " + d);
+    if (a) parts.push("[A] " + a);
+    if (p) parts.push("[P] " + p);
+    return parts.join("\n");
+  }
+  function updateLive(){
+    try { window.live = computeLive(); } catch(e){ console.warn("live update failed", e); }
+  }
+  window.live = window.live || "";
+  document.addEventListener('DOMContentLoaded', function(){
+    // Keep live updated as user types
+    ['dapData','dapAssessment','dapPlan'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('input', updateLive);
+    });
+    // Mic output watcher (MutationObserver)
+    var mic = document.getElementById('micOutput');
+    if (mic && 'MutationObserver' in window) {
+      var mo = new MutationObserver(updateLive);
+      mo.observe(mic, {childList:true, subtree:true, characterData:true});
+    }
+    updateLive();
+    // Dialogue default seeding when none exists for a framework
+    if (typeof window.loadScenarioDetails === 'function') {
+      var orig = window.loadScenarioDetails;
+      window.loadScenarioDetails = function(){
+        try {
+          orig();
+          var list = document.getElementById('dialogueList');
+          if (list && !list.innerHTML.trim()) {
+            var sel = document.getElementById('scenarioSelect');
+            var key = sel ? sel.value : null;
+            var title = (window.scenarios && key && window.scenarios[key]) ? window.scenarios[key].title : 'Selected Framework';
+            list.innerHTML = [
+              '<li><strong>Clinician:</strong> Let’s begin with a brief overview of why you chose <em>' + title + '</em>.</li>',
+              '<li><strong>Client:</strong> [Your response here]</li>',
+              '<li><strong>Clinician:</strong> Based on that, we’ll set 1–2 short-term goals for today.</li>'
+            ].join('');
+          }
+        } catch(e){ console.warn('dialogue seed error', e); }
+      };
+    }
+  });
+})();
+</script>
+<script>
+// ---- Billing/time guards: prevent ReferenceErrors for cptCode/session times ----
+(function(){
+  function readVal(id){ var el = document.getElementById(id); return el ? (el.value||'').trim() : ''; }
+  function ensureVars(){
+    try {
+      // CPT code: prefer input#cptCode, else default
+      if (typeof window.cptCode === 'undefined' || !window.cptCode) {
+        window.cptCode = readVal('cptCode') || 'TBD-NONBILLABLE';
+      }
+      // Session times/duration/next appt
+      if (typeof window.sessionStart === 'undefined' || !window.sessionStart) {
+        window.sessionStart = readVal('sessionStart') || new Date().toISOString();
+      }
+      if (typeof window.sessionEnd === 'undefined' || !window.sessionEnd) {
+        window.sessionEnd = readVal('sessionEnd') || new Date().toISOString();
+      }
+      if (typeof window.sessionDuration === 'undefined' || !window.sessionDuration) {
+        window.sessionDuration = readVal('sessionDuration') || '00:45:00';
+      }
+      if (typeof window.nextAppt === 'undefined' || !window.nextAppt) {
+        window.nextAppt = readVal('nextAppt') || '';
+      }
+    } catch(e){ console.warn('billing/time guard failed', e); }
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    ensureVars();
+    // Watch common fields and refresh globals when they change
+    ['cptCode','sessionStart','sessionEnd','sessionDuration','nextAppt'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('input', ensureVars);
+    });
+  });
+})();
+</script>
+<script>
+// --- Scenario metadata patch: ensure note includes framework title + fields ---
+(function(){
+  function patchNoteFromScenario(note){
+    try{
+      var sel = document.getElementById('scenarioSelect');
+      var key = sel ? sel.value : null;
+      var meta = (window.scenarios && key && window.scenarios[key]) ? window.scenarios[key] : null;
+      if (!note || !key) return;
+      note.scenario_key = key;
+      if (meta){
+        note.scenario_title = meta.title || note.scenario_title || key;
+        note.description = meta.description || note.description || "";
+        note.goals = Array.isArray(meta.goals) ? meta.goals.slice() : (note.goals||[]);
+        note.scrl_checkpoints = Array.isArray(meta.scrl_checkpoints) ? meta.scrl_checkpoints.slice() : (note.scrl_checkpoints||[]);
+        note.biometric_flags = Array.isArray(meta.biometric_flags) ? meta.biometric_flags.slice() : (note.biometric_flags||[]);
+        // If dialogue_scripted is empty, seed from dialogues map for this key
+        if ((!note.dialogue_scripted || !note.dialogue_scripted.length) && window.dialogues && window.dialogues[key]) {
+          note.dialogue_scripted = window.dialogues[key];
+        }
+      }
+      note._scenarioPatched = true;
+    }catch(e){ console.warn('scenario patch failed', e); }
+  }
+
+  // Patch periodically for a short time after load and on scenario changes
+  document.addEventListener('DOMContentLoaded', function(){
+    var attempts = 0;
+    var timer = setInterval(function(){
+      if (window.lastNote && !window.lastNote._scenarioPatched){
+        patchNoteFromScenario(window.lastNote);
+      }
+      attempts++;
+      if (attempts > 40) clearInterval(timer); // ~32s if 800ms interval
+    }, 800);
+
+    var sel = document.getElementById('scenarioSelect');
+    if (sel) sel.addEventListener('change', function(){
+      if (window.lastNote) {
+        window.lastNote._scenarioPatched = false;
+        patchNoteFromScenario(window.lastNote);
+      }
+    });
+
+    // Wrap download functions to ensure patching just before export
+    function wrapDownload(fnName){
+      var orig = window[fnName];
+      window[fnName] = function(){
+        try { if (window.lastNote) patchNoteFromScenario(window.lastNote); } catch(e){}
+        if (typeof orig === 'function') return orig.apply(this, arguments);
+      }
+    }
+    ['downloadNotes','downloadJSON'].forEach(function(n){
+      if (typeof window[n] !== 'undefined') wrapDownload(n);
+    });
+  });
+})();
+</script>
+<script>
+// ---- Unified assembleNote + Generate/Export normalization ----
+(function(){
+  function val(id) {
+    var el = document.getElementById(id);
+    if (!el) return "";
+    return (el.value || el.textContent || "").trim();
+  }
+  function text(el) {
+    return (el && (el.value || el.textContent) || "").trim();
+  }
+  function getScenarioMeta() {
+    var keyEl = document.getElementById('scenarioSelect');
+    var key = keyEl ? keyEl.value : null;
+    var meta = (window.scenarios && key && window.scenarios[key]) ? window.scenarios[key] : null;
+    var title = meta && meta.title ? meta.title : (key || "Unknown Scenario");
+    return {
+      key: key || "unknown",
+      title: title,
+      description: meta && meta.description || "",
+      goals: (meta && meta.goals) ? meta.goals : [],
+      scrl_checkpoints: (meta && meta.scrl_checkpoints) ? meta.scrl_checkpoints : [],
+      biometric_flags: (meta && meta.biometric_flags) ? meta.biometric_flags : [],
+      scripted: (window.dialogues && key && window.dialogues[key]) ? window.dialogues[key] : []
+    };
+  }
+  function computeLiveTranscript() {
+    var mic = text(document.getElementById('micOutput'));
+    var d = val('dapData');
+    var a = val('dapAssessment');
+    var p = val('dapPlan');
+    var parts = [];
+    if (mic) parts.push("[MIC] " + mic);
+    if (d) parts.push("[D] " + d);
+    if (a) parts.push("[A] " + a);
+    if (p) parts.push("[P] " + p);
+    return parts.join("\n");
+  }
+  function guardBilling() {
+    function pref(id, fallback){ var v = val(id); return v || fallback; }
+    if (typeof window.cptCode === 'undefined' || !window.cptCode) window.cptCode = pref('cptCode', 'TBD-NONBILLABLE');
+    if (typeof window.sessionStart === 'undefined' || !window.sessionStart) window.sessionStart = pref('sessionStart', new Date().toISOString());
+    if (typeof window.sessionEnd === 'undefined' || !window.sessionEnd) window.sessionEnd = pref('sessionEnd', new Date().toISOString());
+    if (typeof window.sessionDuration === 'undefined' || !window.sessionDuration) window.sessionDuration = pref('sessionDuration', '00:45:00');
+    if (typeof window.nextAppt === 'undefined' || !window.nextAppt) window.nextAppt = pref('nextAppt', '');
+  }
+  function guardDx() {
+    function pref(id, fallback){ var v = val(id); return v || fallback; }
+    if (typeof window.dxPrimary === 'undefined' || !window.dxPrimary) window.dxPrimary = pref('dxPrimary', 'Unspecified condition');
+    if (typeof window.dxCode === 'undefined' || !window.dxCode) window.dxCode = pref('dxCode', 'R69');
+    if (typeof window.dxSeverity === 'undefined' || !window.dxSeverity) window.dxSeverity = pref('dxSeverity', 'unspecified');
+    if (typeof window.dxSpecifiers === 'undefined' || !window.dxSpecifiers) window.dxSpecifiers = pref('dxSpecifiers', '');
+    if (typeof window.dxRuleOuts === 'undefined' || !window.dxRuleOuts) window.dxRuleOuts = pref('dxRuleOuts', '');
+    if (typeof window.nextReview === 'undefined' || !window.nextReview) window.nextReview = pref('nextReview', '');
+  }
+  function assembleNote() {
+    var meta = getScenarioMeta();
+    guardBilling();
+    guardDx();
+    var signature = val('signature') || (window.state && window.state.signature) || "";
+    var note = {
+      timestamp: new Date().toLocaleString(),
+      scenario_key: meta.key,
+      scenario_title: meta.title,
+      description: meta.description,
+      goals: meta.goals,
+      scrl_checkpoints: meta.scrl_checkpoints,
+      biometric_flags: meta.biometric_flags,
+      confidence_score: 95,
+      dialogue_scripted: meta.scripted,
+      transcript_live: computeLiveTranscript(),
+      billing: {
+        cpt_code: window.cptCode,
+        session_start: window.sessionStart,
+        session_end: window.sessionEnd,
+        duration: window.sessionDuration,
+        next_appointment: window.nextAppt
+      },
+      diagnosis: {
+        primary: window.dxPrimary,
+        code: window.dxCode,
+        severity: window.dxSeverity,
+        specifiers: (window.dxSpecifiers ? String(window.dxSpecifiers).split(/\s*,\s*/).filter(Boolean) : []),
+        rule_outs: (window.dxRuleOuts ? String(window.dxRuleOuts).split(/\s*,\s*/).filter(Boolean) : []),
+        next_review: window.nextReview || ""
+      },
+      DAP: {
+        data: val('dapData'),
+        assessment: val('dapAssessment'),
+        plan: val('dapPlan')
+      },
+      signature: signature
+    };
+    return note;
+  }
+  // Expose for buttons/handlers
+  window.assembleNote = assembleNote;
+
+  function setOutput(msg) {
+    var out = document.getElementById('outputBox');
+    if (out) out.value = (out.value || '') + (out.value ? "\n" : "") + msg;
+  }
+
+  function enableExports(enabled) {
+    ['downloadTxtBtn','exportJsonBtn'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.disabled = !enabled;
+    });
+  }
+
+  function ensureHandlers() {
+    // Generate button normalization
+    var gen = document.getElementById('generateBtn');
+    if (gen) {
+      gen.addEventListener('click', function(evt){
+        try {
+          // Prevent any legacy confirm() from hijacking flow
+          var origConfirm = window.confirm;
+          window.confirm = function(){ return true; };
+          var note = assembleNote();
+          window.lastNote = note;
+          setOutput("[OK] Documentation generated.");
+          enableExports(true);
+          // restore confirm
+          window.confirm = origConfirm;
+        } catch(e) {
+          setOutput("[Error] " + (e && e.message ? e.message : e));
+          enableExports(false);
+        }
+      });
+    }
+    // Download TXT
+    function downloadNotes(){
+      try {
+        var note = window.lastNote || assembleNote();
+        var lines = [
+          "Timestamp: " + note.timestamp,
+          "Scenario: " + (note.scenario_title || note.scenario_key),
+          "Description: " + (note.description || ""),
+          "Goals: " + (note.goals || []).join("; "),
+          "DAP:",
+          "  Data: " + (note.DAP && note.DAP.data || ""),
+          "  Assessment: " + (note.DAP && note.DAP.assessment || ""),
+          "  Plan: " + (note.DAP && note.DAP.plan || ""),
+          "Transcript (live):",
+          (note.transcript_live || ""),
+          "Signature: " + (note.signature || "")
+        ].join("\n");
+        var blob = new Blob([lines], {type: "text/plain;charset=utf-8"});
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = "session_note.txt";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 0);
+      } catch(e) {
+        setOutput("[Error] downloadNotes: " + (e && e.message ? e.message : e));
+      }
+    }
+    // Download JSON
+    function downloadJSON(){
+      try {
+        var note = window.lastNote || assembleNote();
+        var blob = new Blob([JSON.stringify(note, null, 2)], {type: "application/json;charset=utf-8"});
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = "session_note.json";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 0);
+      } catch(e) {
+        setOutput("[Error] downloadJSON: " + (e && e.message ? e.message : e));
+      }
+    }
+    // Attach to existing buttons if present or leave as globals
+    var dl = document.getElementById('downloadTxtBtn');
+    if (dl) dl.onclick = downloadNotes;
+    var ej = document.getElementById('exportJsonBtn');
+    if (ej) ej.onclick = downloadJSON;
+    window.downloadNotes = window.downloadNotes || downloadNotes;
+    window.downloadJSON = window.downloadJSON || downloadJSON;
+    // Initially disable until generated
+    enableExports(!!window.lastNote);
+  }
+
+  document.addEventListener('DOMContentLoaded', ensureHandlers);
+})();
+</script>
+<script>
+// ---- Minimal mic fallback (Web Speech API) ----
+(function(){
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) return;
+  if (window.__micFallbackInstalled) return;
+  window.__micFallbackInstalled = true;
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var rec = new SR();
+  rec.continuous = false;
+  rec.interimResults = true;
+  rec.onresult = function(evt){
+    var final = ''; var interim = '';
+    for (var i=evt.resultIndex; i<evt.results.length; i++){
+      var res = evt.results[i];
+      if (res.isFinal) final += res[0].transcript;
+      else interim += res[0].transcript;
+    }
+    var el = document.getElementById('micOutput');
+    if (el) el.textContent = (final || interim || '').trim();
+  };
+  rec.onerror = function(e){ /* silent */ };
+  document.addEventListener('DOMContentLoaded', function(){
+    var out = document.getElementById('micOutput');
+    if (!out) return;
+    // Auto-prompt once for permission; stop immediately after a brief start
+    try { rec.start(); setTimeout(function(){ try{ rec.stop(); }catch(e){} }, 1500); } catch(e){}
+    // Wire optional buttons if they exist
+    var startBtn = document.getElementById('startMic');
+    var stopBtn = document.getElementById('stopMic');
+    if (startBtn) startBtn.addEventListener('click', function(){ try{ rec.start(); }catch(e){} });
+    if (stopBtn) stopBtn.addEventListener('click', function(){ try{ rec.stop(); }catch(e){} });
+  });
+})();
+</script>
+<script>
+// Ensure download functions read scenario_title and always have a note
+(function(){
+  function ensureNote(){ return window.lastNote || (typeof window.assembleNote==='function'? window.assembleNote(): null); }
+  function txtFrom(note){
+    try {
+      var lines = [
+        "Timestamp: " + (note.timestamp||""),
+        "Scenario: " + (note.scenario_title || note.scenario_key || ""),
+        "Description: " + (note.description || ""),
+        "Goals: " + (Array.isArray(note.goals)? note.goals.join("; ") : ""),
+        "DAP:",
+        "  Data: " + (note.DAP && note.DAP.data || ""),
+        "  Assessment: " + (note.DAP && note.DAP.assessment || ""),
+        "  Plan: " + (note.DAP && note.DAP.plan || ""),
+        "Transcript (live):",
+        (note.transcript_live || ""),
+        "Signature: " + (note.signature || "")
+      ];
+      return lines.join("\n");
+    } catch(e){ return "Export error: " + e.message; }
+  }
+  window.downloadNotes = function(){
+    var note = ensureNote(); if(!note){ alert("No note yet."); return; }
+    var blob = new Blob([txtFrom(note)], {type:"text/plain;charset=utf-8"});
+    var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download="session_note.txt";
+    document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href); a.remove();},0);
+  };
+  window.downloadJSON = function(){
+    var note = ensureNote(); if(!note){ alert("No note yet."); return; }
+    var blob = new Blob([JSON.stringify(note,null,2)], {type:"application/json;charset=utf-8"});
+    var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download="session_note.json";
+    document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href); a.remove();},0);
+  };
+})();
+</script>
+<script src="runtime/bpirlGate.js"></script>
+<script src="runtime/hookRegistry.js"></script>
+<script src="runtime/preHookRunner.js"></script>
+<script src="runtime/ctxScaffold.js"></script>
+<script src="runtime/wrapEvaluateNode.js"></script>
+<script src="runtime/bpirl_debug_panel.js"></script>
+<script src="bpirl_bootstrap.js"></script>
+<script defer="" src="assets/js/bpirl_exec_shim.js"></script>
+<script defer="" src="assets/js/dap_autofill.js"></script>
+<script defer="" src="assets/js/bpirl_split_dropdown.js"></script>
+
+  <script src="runtime/dsm_influence.js"></script>
+<!-- Clinician Tendencies (Non-intrusive Addon UI) -->
+<style>
+  #tendencies-addon { position: fixed; right: 10px; bottom: 10px; background: rgba(255,255,255,0.92);
+    border: 1px solid #ddd; border-radius: 8px; padding: 6px 8px; font: 14px/1.2 system-ui,-apple-system,Segoe UI,Roboto;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08); z-index: 9999; }
+  #tendencies-addon label { margin-right: 6px; opacity: .8; }
+  #tendencies-addon select { font: inherit; }
+</style>
+<div id="tendencies-addon" aria-label="Clinician Tendencies">
+  <label for="tendencies">Clinician Tendencies</label>
+  <select id="tendencies" name="tendencies">
+    <option value="">— Select —</option>
+    <option>High Empathy · Low Confrontation</option>
+    <option>Directive · Structured</option>
+    <option>Socratic · Reflective</option>
+    <option>Motivational Interviewing</option>
+    <option>CBT Focus</option>
+    <option>DBT Focus</option>
+  </select>
+</div>
+<script src="assets/js/tendencies_addon.js"></script>
+
+<script src="assets/js/remove_legacy_bop.js"></script><script src="/shared/ai/ai_bus.js?v=1759319983"></script>
+  <script src="/shared/overrides/ai_action_dispatch.js"></script>
+<script src="/shared/ai/projection/engine/projection_runtime.js"></script>
+<script src="/shared/ai/projection/engine/projection_ruleset_loader.js"></script>
+<script src="/shared/ai/projection/corpora/its/its_rules.js"></script>
+<script src="/shared/ai/projection/engine/projection_engine.js"></script>
+<script src="/psychosocial/overrides/projection_shim.js"></script>
+<script src="/shared/vcall/vcall-bridge.js"></script>
+<script src="/group/ui/ai-button-observer.js"></script>
+<script src="/psychosocial/overrides/suppress_outerhtml_error.js"></script>
+<script src="/shared/core/dsmctc_core.js"></script>
+<script src="/ts_runtime/core.js"></script>
+<script src="/shared/ai/alg_init.js?v=1759272348"></script>
+<script src="/shared/ai/vsc_bridge.js?v=1759319983"></script>
+<script src="/shared/ai/interop_bridge_polyfill.js?v=1759319983"></script>
+<script src="/shared/consent/bio_consent.js?v=1759319983"></script>
+<script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
+<script src="/ts_runtime/biometric/emotional_thresholds.js?v=1759319983"></script>
+<script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
+<script src="/ts_runtime/bandersnatch/index.js?v=1759319983"></script>
+<script src="/shared/ai/bandersnatch_adapter.js?v=1759325712"></script>
+<script src="/ts_runtime/buckyball/core.js?v=1759326565"></script>
+<script src="/shared/ai/buckyball_adapter.js?v=1759326565"></script>
+<script src="/shared/ui/reposition_psychosocial.js?v=1759333140"></script>
+<script src="/shared/ai/ai_quick_button.js?v=1759333140"></script>
+<script src="/shared/ui/kill_clinician_dropdown.js?v=1759333839"></script>
+<script src="/shared/ui/ai_button.js?v=1759344065"></script>
+<script src="/ai-nominclactor/assets/js/algos.js?v=1759413234"></script>
+<script src="/shared/projection/projection_renderer.js?v=1759413234"></script>
+<script src="/shared/projection/chip_activation.js?v=1759413234"></script>
+<script src="/shared/projection/environment_loader.js?v=1759413234"></script>
+</body>
+  <script src="/psychosocial/overrides/psy_adapter_readonly.js?v=20251016-220732"></script>
+</html>

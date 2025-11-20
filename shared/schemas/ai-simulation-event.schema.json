@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VSC AI Simulation Event",
+  "type": "object",
+  "properties": {
+    "isSimulation": { "type": "boolean", "const": true },
+    "educationalPurpose": { "type": "boolean", "const": true },
+    "clinicalClaims": { "type": "boolean", "const": false }
+  },
+  "required": ["isSimulation","educationalPurpose","clinicalClaims"]
+}

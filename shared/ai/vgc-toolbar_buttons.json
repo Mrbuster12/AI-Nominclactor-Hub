@@ -1,0 +1,8 @@
+{
+  "buttons": [
+    { "label": "Summarize",   "class": "btn",          "data": "summarize" },
+    { "label": "Risk Screen", "class": "btn success",  "data": "risk" },
+    { "label": "Plan Suggest","class": "btn warning",  "data": "plan" },
+    { "label": "Reset",       "class": "btn danger",   "data": "reset" }
+  ]
+}

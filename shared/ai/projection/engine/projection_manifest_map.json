@@ -1,0 +1,24 @@
+{
+  "manifests": {
+    "archives_summary": "TS_Manifest_Archives_Summary.json",
+    "expanded_rollup": "TS_Manifest_Expanded_Rollup.csv",
+    "files_index": "TS_Manifest_Files.csv",
+    "text_scan": "TS_Manifest_TextScan.csv",
+    "zip_contents": "TS_Manifest_ZipContents.csv",
+    "index_by_location": "TS_Index_By_Location.csv"
+  },
+  "routing": {
+    "its": {
+      "source": "files_index"
+    },
+    "tiers": {
+      "source": "expanded_rollup"
+    },
+    "eclipse": {
+      "source": "zip_contents"
+    },
+    "panoptaflex": {
+      "source": "archives_summary"
+    }
+  }
+}

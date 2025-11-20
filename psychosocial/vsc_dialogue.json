@@ -1,0 +1,64 @@
+{
+    "Scenario 1": [
+        {
+            "role": "VSC",
+            "text": "Welcome. Let\u2019s begin by discussing what brings you here today."
+        },
+        {
+            "role": "Client",
+            "text": "[Client types their reason]"
+        },
+        {
+            "role": "VSC",
+            "text": "Thank you. I\u2019d like to ask a few questions to better understand your current mood and thought patterns."
+        },
+        {
+            "role": "VSC",
+            "text": "Have you noticed any recurring thoughts that affect how you feel throughout the day?"
+        },
+        {
+            "role": "Client",
+            "text": "[Client responds]"
+        },
+        {
+            "role": "VSC",
+            "text": "Let\u2019s set one goal together to focus on this week. Does that sound okay?"
+        }
+    ],
+    "Scenario 2": [
+        {
+            "role": "VSC",
+            "text": "I understand relapse is a concern. Can you tell me more about what\u2019s been happening lately?"
+        },
+        {
+            "role": "Client",
+            "text": "[Client reflects]"
+        },
+        {
+            "role": "VSC",
+            "text": "It sounds like you\u2019ve experienced some triggers. Let\u2019s explore how those triggers affect your motivation."
+        },
+        {
+            "role": "VSC",
+            "text": "What has helped you stay clean or avoid use in the past?"
+        }
+    ],
+    "Scenario 3": [
+        {
+            "role": "VSC",
+            "text": "We\u2019re going to begin gently reviewing your past experiences. If anything feels overwhelming, let me know."
+        },
+        {
+            "role": "VSC",
+            "text": "Let\u2019s start with a timeline of your childhood\u2014what memories come to mind when you think of your earliest years?"
+        },
+        {
+            "role": "Client",
+            "text": "[Client provides narrative]"
+        },
+        {
+            "role": "VSC",
+            "text": "Thank you for trusting me with that. Let\u2019s use a grounding technique now\u2014place your feet flat and focus on your breath."
+        }
+    ]
+}

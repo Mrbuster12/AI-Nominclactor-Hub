@@ -1,0 +1,1 @@
+/* note_ingest stub */

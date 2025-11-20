@@ -1,0 +1,6 @@
+#bpirl-toggle, .bpirl-toggle, .bpirl-debug-toggle,
+#bpirl-button,
+#bpirl-split-dropdown, .bpirl-split-dropdown {
+  display: none !important;
+  visibility: hidden !important;
+}

@@ -1,0 +1,22 @@
+
+#bpirl-debug{
+  position: fixed; right: 16px; bottom: 16px;
+  width: 220px; padding: 10px 12px; z-index: 99999;
+  background: rgba(17,24,39,.92); color: #e5e7eb;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  user-select: none;
+}
+#bpirl-debug-drag{
+  font-weight: 700; letter-spacing: .08em; font-size: 12px; color: #a78bfa;
+  cursor: move; margin-bottom: 6px; text-align: right;
+}
+#bpirl-debug-row{ display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+#bpirl-debug-row.meta{ font-size: 11px; color: #9ca3af; }
+#bpirl-debug-lamp{ width: 10px; height: 10px; border-radius: 999px; background: #9ca3af; }
+#bpirl-on,#bpirl-off{
+  flex: 1; padding: 6px 8px; border-radius: 8px; border: 0; cursor: pointer;
+  background: #374151; color: #e5e7eb;
+}
+#bpirl-on:hover{ background: #065f46; }
+#bpirl-off:hover{ background: #7c2d12; }

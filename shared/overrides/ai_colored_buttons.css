@@ -1,0 +1,22 @@
+#vsc-ai-rail { width: 56px; gap: 8px; }
+.vsc-ai-btn {
+  all: unset;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 56px; height: 40px;
+  border-radius: 10px;
+  font: 600 11px/1.1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  text-align: center; color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  cursor: pointer; padding: 6px;
+}
+.vsc-ai-primary   { background: #2563eb; }
+.vsc-ai-success   { background: #16a34a; }
+.vsc-ai-warning   { background: #d97706; }
+.vsc-ai-danger    { background: #dc2626; }
+.vsc-ai-secondary { background: #6b7280; }
+.vsc-ai-btn:focus-visible, .vsc-ai-btn:hover {
+  outline: 2px solid rgba(0,0,0,0.12);
+  outline-offset: 2px;
+}
+.vsc-ai-btn > span { display:block; max-width: 46px; white-space: normal; }

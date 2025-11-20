@@ -1,0 +1,14 @@
+{
+  "depression": {
+    "goals": ["Stabilize mood and improve daily functioning"],
+    "objectives": ["Reduce PHQ-9 score by 5 points", "Increase engagement in pleasurable activities"],
+    "interventions": ["CBT cognitive restructuring", "Behavioral activation"],
+    "homework_keys": ["CBT_Fear_of_Failure.pdf","CBT_Gratitude_Resistance.pdf"]
+  },
+  "suicidal": {
+    "goals": ["Increase safety and reduce self-harm risk"],
+    "objectives": ["Complete safety plan", "Daily check-ins for 14 days"],
+    "interventions": ["Means restriction counseling","Crisis response plan"],
+    "homework_keys": ["DBT_Self-Harm_Risk.pdf","DBT_Post-Discharge_Relapse.pdf"]
+  }
+}

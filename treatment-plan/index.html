@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Treatment Plan</title>
+<link rel="stylesheet" href="./treatment_plan.css"/>
+</head>
+<body>
+<section id="tp-header" class="tp-header">
+  <h2>Treatment Plan</h2>
+  <div class="status">
+    <span id="planClient">Client: —</span>
+    <span id="planTrack" class="badge">Track: —</span>
+    <span id="planTier" class="badge">CTC: —</span>
+    <span id="planVersion" class="badge">v—</span>
+  </div>
+</section>
+<section class="tp-main">
+  <aside id="tp-drawers" class="tp-drawers" aria-label="Stored Plans">
+    <header>
+      <h3>Plan Drawer</h3>
+      <button id="btnNewVersion">Save New Version</button>
+      <button id="btnRefreshFromBridges">Refresh from Modules</button>
+    </header>
+    <ul id="drawerList" class="drawer-list"></ul>
+  </aside>
+  <article id="tp-display" class="tp-display" aria-label="Current Plan">
+    <header><h3>Current Plan</h3></header>
+    <div class="tp-row"><label>Provisional Diagnosis</label><div id="tpDx">—</div></div>
+    <div class="tp-row"><label>Goals</label><ul id="tpGoals"></ul></div>
+    <div class="tp-row"><label>Objectives</label><ul id="tpObjectives"></ul></div>
+    <div class="tp-row"><label>Interventions</label><ul id="tpInterventions"></ul></div>
+    <div class="tp-row"><label>Notes</label><textarea id="tpNotes" rows="5" placeholder="Clinician notes…"></textarea></div>
+  </article>
+</section>
+<script src="/shared/bridge.js?v=5"></script>
+<script src="/shared/enforce-bridge.js?v=5"></script>
+<script src="/shared/core/interop-hotfix.js"></script>
+<script src="./treatment_plan.view.js"></script>
+</body>
+</html>
