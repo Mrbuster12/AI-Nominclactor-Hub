@@ -6,6 +6,7 @@
   <title>AI Nominclactor</title>
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="/shared/overrides/ai_module_buttons.css">
+  <script src="/shared/ai/bus.js"></script>
 </head>
 <body>
   <header class="topbar">
@@ -17,67 +18,57 @@
     <section class="card">
       <h2>Module Online</h2>
       <p>
-        This is the starting point for the AI Nominclactor module. From here we
-        integrate the pre-assessment flow, psychosocial engine, treatment plan
-        generator, and releases / consents, plus VNP Phase 2 logic.
+        This is the starting point for the AI Nominclactor module. From here we integrate:
+        Pre-Assessment CTC Intake, Psychosocial, Treatment Plan, and Releases/Consents under a single AI brain.
       </p>
       <button id="check-ready">Run Self-Check</button>
       <pre id="status" aria-live="polite"></pre>
     </section>
 
     <section class="card">
-      <h2>Clinical Modules</h2>
-      <p>Select a module shell to open from this hub.</p>
-      <div class="nav-grid">
-        <a class="btn primary" href="/pre-assessment-ctc-intake/">
-          Pre-Assessment / CTC Intake
-        </a>
-        <a class="btn secondary" href="/psychosocial/">
-          Psychosocial / Biopsychosocial
-        </a>
-        <a class="btn secondary" href="/treatment-plan/">
-          Treatment Plan Engine
-        </a>
-        <a class="btn secondary" href="/releases-consents/">
-          Releases & Consents
-        </a>
+      <h2>Intake Modules</h2>
+      <p>Select which intake surface you want to open under AI supervision.</p>
+      <div class="module-grid">
+        <a class="btn primary" href="/pre-assessment-ctc-intake/">Pre-Assessment CTC Intake</a>
+        <a class="btn primary" href="/psychosocial/">Psychosocial / Biopsychosocial</a>
+        <a class="btn primary" href="/treatment-plan/">Treatment Plan</a>
+        <a class="btn primary" href="/releases-consents/">Releases &amp; Consents</a>
       </div>
+    </section>
+
+    <section class="actions" style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap">
+      <button id="mic" type="button" class="btn secondary">🎙️ Mic</button>
+      <button id="export-json" type="button" class="btn secondary">Export Summary JSON</button>
+      <button id="reset-session" type="button" class="btn danger">Reset Interview</button>
     </section>
   </main>
 
-  <!-- bottom control row kept inside <body> -->
-  <section class="actions" style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap">
-    <button id="mic" type="button" class="btn secondary">🎙️ Mic</button>
-    <button id="export-json" type="button" class="btn secondary">Export Summary JSON</button>
-    <button id="reset-session" type="button" class="btn danger">Reset Interview</button>
-  </section>
-
-  <!-- Local module scripts -->
+  <!-- Local hub scripts -->
   <script src="assets/js/app.js"></script>
   <script src="assets/js/ai-bridge.js"></script>
-  <script src="assets/js/tts.js"></script>
 
-  <!-- Shared AI + bridge stack -->
+  <!-- Shared AI wiring (kept exactly from your prior stack) -->
   <script src="/shared/overrides/ai_module_buttons.js"></script>
   <script src="/shared/ai/ai-button-observer.js"></script>
+  <script src="/ai-nominclactor/assets/js/algos.js?v=1759416500"></script>
+  <script src="/shared/ai/vcall-bridge.js"></script>
+  <script src="/shared/ai/ai_bus.js?v=1759319983"></script>
+  <script src="/shared/overrides/ai_action_dispatch.js"></script>
 
   <script src="/shared/vcall/vcall-bridge.js"></script>
   <script src="/shared/ai/vsc_bridge.js?v=1759319983"></script>
   <script src="/shared/ai/interop_bridge_polyfill.js?v=1759319983"></script>
-
   <script src="/shared/consent/bio_consent.js?v=1759319983"></script>
-  <script src="/shared/ai/ai_bus.js?v=1759319983"></script>
+  <script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
   <script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
-
-  <!-- Bandersnatch + projection shell (non-module front door only) -->
   <script src="/shared/ai/alg_init.js?v=1759416500"></script>
   <script src="/shared/ui/ai_button.js?v=1759416500"></script>
   <script src="/shared/projection/projection_renderer.js?v=1759416500"></script>
   <script src="/shared/projection/chip_activation.js?v=1759416500"></script>
   <script src="/shared/projection/environment_loader.js?v=1759416500"></script>
 
-  <!-- VNP Phase 2 registry (this hub drives these names) -->
-  <script src="/shared/ai/vnp_phase2_algorithms.js?v=1759416500"></script>
+  <!-- Local TTS helper -->
+  <script src="assets/js/tts.js"></script>
 </body>
 </html>
 
