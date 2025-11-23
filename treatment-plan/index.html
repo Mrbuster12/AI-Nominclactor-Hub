@@ -6,7 +6,9 @@
 <title>Treatment Plan</title>
 <link rel="stylesheet" href="./treatment_plan.css"/>
 </head>
+
 <body>
+
 <section id="tp-header" class="tp-header">
   <h2>Treatment Plan</h2>
   <div class="status">
@@ -16,6 +18,7 @@
     <span id="planVersion" class="badge">v—</span>
   </div>
 </section>
+
 <section class="tp-main">
   <aside id="tp-drawers" class="tp-drawers" aria-label="Stored Plans">
     <header>
@@ -25,6 +28,7 @@
     </header>
     <ul id="drawerList" class="drawer-list"></ul>
   </aside>
+
   <article id="tp-display" class="tp-display" aria-label="Current Plan">
     <header><h3>Current Plan</h3></header>
     <div class="tp-row"><label>Provisional Diagnosis</label><div id="tpDx">—</div></div>
@@ -34,9 +38,35 @@
     <div class="tp-row"><label>Notes</label><textarea id="tpNotes" rows="5" placeholder="Clinician notes…"></textarea></div>
   </article>
 </section>
+
+<!-- EXISTING BRIDGE + INTEROP STACK (LEAVE THEM IN THIS ORDER) -->
 <script src="/shared/bridge.js?v=5"></script>
 <script src="/shared/enforce-bridge.js?v=5"></script>
 <script src="/shared/core/interop-hotfix.js"></script>
 <script src="./treatment_plan.view.js"></script>
+
+<!-- NEW: BIOMETRIC CONSENT + INGEST (SAME ENGINE USED IN OTHER MODULES) -->
+<script src="/shared/consent/bio_consent.js?v=1759319983"></script>
+<script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
+
+<!-- NEW: INLINE CONSENT HOOK FOR TREATMENT-PLAN VIEW -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  try {
+    if (window.AIEngine && AIEngine.Consent && AIEngine.Consent.ensure) {
+      AIEngine.Consent.ensure('treatment-plan:view', {
+        path: location.pathname,
+        module: 'treatment-plan'
+      });
+    } else {
+      console.warn('[TP] Consent engine not available on this page.');
+    }
+  } catch (err) {
+    console.error('[TP] consent ensure failed', err);
+  }
+});
+</script>
+
 </body>
 </html>
+
