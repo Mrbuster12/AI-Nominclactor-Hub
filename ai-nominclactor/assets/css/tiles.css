@@ -1,0 +1,216 @@
+/* Intake Docs — AI Hub Tile Layout */
+
+:root {
+  --tile-bg: #0e1723;
+  --tile-bg-alt: #111827;
+  --tile-border: #1f2933;
+  --tile-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+  --tile-shadow-soft: 0 8px 18px rgba(0, 0, 0, 0.25);
+  --tile-radius: 14px;
+  --tile-gap: 14px;
+  --tile-accent: #38bdf8;
+  --tile-accent-soft: rgba(56, 189, 248, 0.08);
+}
+
+/* Container tweaks for hub */
+main.container {
+  max-width: 1120px;
+  margin: 32px auto;
+  padding: 0 16px 40px;
+}
+
+/* Cards already exist; just refine them slightly */
+.card {
+  background: radial-gradient(circle at top left, #111827 0, #020617 60%);
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  padding: 18px 18px 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+}
+
+.card h2 {
+  margin-top: 0;
+  margin-bottom: 6px;
+  font-size: 1.1rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #e5e7eb;
+}
+
+.card p {
+  margin-top: 4px;
+  margin-bottom: 10px;
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+/* TILE GRID — we reuse .actions as the grid container */
+.card .actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--tile-gap);
+  margin-top: 10px;
+}
+
+/* Tile button base */
+.card .actions .btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  text-align: left;
+  padding: 14px 14px 12px;
+  border-radius: var(--tile-radius);
+  border: 1px solid var(--tile-border);
+  background: linear-gradient(
+    140deg,
+    var(--tile-bg) 0%,
+    var(--tile-bg-alt) 70%
+  );
+  box-shadow: var(--tile-shadow-soft);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  color: #e5e7eb;
+  font-size: 0.92rem;
+  line-height: 1.35;
+  transition:
+    transform 0.14s ease-out,
+    box-shadow 0.14s ease-out,
+    border-color 0.14s ease-out,
+    background 0.18s ease-out;
+}
+
+/* Accent strip on left edge */
+.card .actions .btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 3px;
+  background: linear-gradient(
+    180deg,
+    rgba(56, 189, 248, 0.85),
+    rgba(129, 140, 248, 0.75)
+  );
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* Subtle glow on hover */
+.card .actions .btn::after {
+  content: "";
+  position: absolute;
+  inset: auto;
+  left: 24%;
+  top: -35%;
+  width: 170%;
+  height: 80%;
+  background: radial-gradient(
+    circle at center,
+    rgba(56, 189, 248, 0.12),
+    transparent 68%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease-out;
+}
+
+/* Tile hover/active */
+.card .actions .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--tile-shadow);
+  border-color: rgba(56, 189, 248, 0.8);
+  background: linear-gradient(
+    145deg,
+    #020617 0%,
+    var(--tile-bg-alt) 45%,
+    rgba(15, 23, 42, 0.95) 100%
+  );
+}
+
+.card .actions .btn:hover::after {
+  opacity: 1;
+}
+
+/* Active/focus states */
+.card .actions .btn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 1px #020617,
+    0 0 0 2px var(--tile-accent);
+}
+
+.card .actions .btn:active {
+  transform: translateY(0);
+  box-shadow: var(--tile-shadow-soft);
+}
+
+/* Tile content layout */
+.card .actions .btn span.tile-label {
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: rgba(226, 232, 240, 0.9);
+  margin-left: 6px;
+}
+
+.card .actions .btn strong.tile-title {
+  margin-top: 2px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+.card .actions .btn small.tile-meta {
+  margin-top: 6px;
+  display: block;
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+/* If we only have plain text inside the button, keep it legible */
+.card .actions .btn:not(:has(.tile-title)) {
+  font-weight: 500;
+}
+
+/* Top bar tweaks */
+header.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+  background: radial-gradient(circle at top left, #020617 0, #020617 60%);
+}
+
+header.topbar h1 {
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0;
+  color: #e5e7eb;
+}
+
+header.topbar .hub-btn {
+  font-size: 0.8rem;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  color: #e5e7eb;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(6px);
+  transition:
+    background 0.16s ease-out,
+    border-color 0.16s ease-out,
+    transform 0.12s ease-out;
+}
+
+header.topbar .hub-btn:hover {
+  background: rgba(15, 23, 42, 1);
+  border-color: var(--tile-accent);
+  transform: translateY(-1px);
+}
+
