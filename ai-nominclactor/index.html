@@ -3,9 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>AI Nominclactor</title>
+  <title>AI Nominclactor Hub</title>
+
+  <!-- Local styles -->
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="/shared/overrides/ai_module_buttons.css">
+
+  <!-- Legacy AI bus (kept for compatibility) -->
   <script src="/shared/ai/bus.js"></script>
 </head>
 
@@ -17,7 +21,7 @@
 
   <main class="container">
 
-    <!-- CARD 1 -->
+    <!-- CARD 1: Status -->
     <section class="card">
       <h2>Module Online</h2>
       <p>This module is active and acting as the intake brain hub.</p>
@@ -25,12 +29,12 @@
       <pre id="status" aria-live="polite"></pre>
     </section>
 
-    <!-- CARD 2: Navigation -->
+    <!-- CARD 2: Navigation to Intake Docs -->
     <section class="card">
       <h2>Intake Document Modules</h2>
       <p>Select a module to open its dedicated UI.</p>
 
-      <div class="actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+      <div class="actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
         <button class="btn" data-target="/pre-assessment-ctc-intake/">
           Pre-Assessment CTC Intake
         </button>
@@ -52,7 +56,7 @@
   <script src="assets/js/app.js"></script>
   <script src="assets/js/ai-bridge.js"></script>
 
-  <!-- Shared AI / buttons -->
+  <!-- Shared AI / button overrides -->
   <script src="/shared/overrides/ai_module_buttons.js"></script>
   <script src="/shared/ai/ai-button-observer.js"></script>
   <script src="/ai-nominclactor/assets/js/algos.js?v=1759416500"></script>
@@ -63,38 +67,19 @@
   <script src="/shared/ai/vnp_phase2_algorithms.js?v=1759416500"></script>
   <script src="/shared/overrides/ai_action_dispatch.js"></script>
 
-  <!-- No TS export files here -->
+  <!-- Safe shared runtime (NO TS export modules here) -->
   <script src="/shared/ai/interop_bridge_polyfill.js?v=1759319983"></script>
   <script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
   <script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
   <script src="/shared/ai/alg_init.js?v=1759416500"></script>
 
-  <!-- UI + projection -->
+  <!-- UI helpers -->
   <script src="/shared/ui/ai_button.js?v=1759416500"></script>
+
+  <!-- Projection / environment (hologram, chip, room) -->
   <script src="/shared/projection/projection_renderer.js?v=1759416500"></script>
   <script src="/shared/projection/chip_activation.js?v=1759416500"></script>
   <script src="/shared/projection/environment_loader.js?v=1759416500"></script>
-</body>
-</html>
-
-  <!-- DO NOT USE ANY TS_RUNTIME EXPORT FILES -->
-  <!-- NO emotional_thresholds.js -->
-  <!-- NO bandersnatch/index.js -->
-
-  <!-- Safe shared runtime -->
-  <script src="/shared/ai/interop_bridge_polyfill.js?v=1759319983"></script>
-  <script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
-  <script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
-  <script src="/shared/ai/alg_init.js?v=1759416500"></script>
-
-  <!-- UI -->
-  <script src="/shared/ui/ai_button.js?v=1759416500"></script>
-
-  <!-- Projection -->
-  <script src="/shared/projection/projection_renderer.js?v=1759416500"></script>
-  <script src="/shared/projection/chip_activation.js?v=1759416500"></script>
-  <script src="/shared/projection/environment_loader.js?v=1759416500"></script>
-
 </body>
 </html>
 

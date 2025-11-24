@@ -1,71 +1,44 @@
-<form id="preimp-form">
-  <!-- Section 1: Core flags -->
-  <section id="preimp-s1_demographics">
-    <h2>Symptoms &amp; Risk (Client-Reported)</h2>
+<!-- Pre-Assessment Controls Panel -->
+<div id="preControls" class="pre-controls">
 
-    <label>
-      <input type="checkbox" name="anx_core">
-      Reports anxiety / worry interfering with sleep or daily function
-    </label>
+  <!-- Note Generator Button -->
+  <button id="generateNoteBtn" class="btn-primary">
+    Generate Intake Summary
+  </button>
 
-    <label>
-      <input type="checkbox" name="anx_psychosomatic">
-      Somatic anxiety (e.g., racing heart, sweating, GI upset)
-    </label>
+  <!-- MSE Quick Fill -->
+  <div class="mse-block">
+    <label>MSE Flags</label>
+    <button id="flagPsychosis" class="btn-small">Psychosis</button>
+    <button id="flagSI" class="btn-small">SI</button>
+    <button id="flagHI" class="btn-small">HI</button>
+  </div>
 
-    <label>
-      Panic frequency:
-      <select name="panic_freq">
-        <option value="0">None</option>
-        <option value="1">Monthly</option>
-        <option value="2">Weekly</option>
-        <option value="3">Daily</option>
-      </select>
-    </label>
+  <!-- DSM / CTC Quick View -->
+  <div id="dxPreview" class="dx-preview">
+    <strong>Diagnosis:</strong>
+    <span id="dxPreviewCode">R69</span> — <span id="dxPreviewText">Unspecified Condition</span>
+  </div>
 
-    <label>
-      <input type="checkbox" name="si_past30d">
-      Suicidal ideation within past 30 days
-    </label>
-  </section>
+  <div id="ctcPreview" class="ctc-preview">
+    <strong>CTC Tier:</strong> <span id="ctcPreviewTier">CTC-1</span>
+  </div>
 
-  <!-- Section 2: Clinician Specifiers (feeds DSM / CTC logic) -->
-  <section id="preimp-s_bsi">
-    <h2>Clinician Specifiers</h2>
+  <!-- Snapshot Viewer -->
+  <div class="snapshot-block">
+    <label>Latest Snapshot</label>
+    <pre id="snapshotOut">{}</pre>
+  </div>
 
-    <h3>BSI Severity</h3>
-    <label>
-      Severity:
-      <select name="bsi_severity">
-        <option value="">Select…</option>
-        <option value="mild">mild</option>
-        <option value="moderate">moderate</option>
-        <option value="marked">marked</option>
-        <option value="acute-flare">acute-flare</option>
-      </select>
-    </label>
+</div>
 
-    <h3>Alliance</h3>
-    <label>
-      Alliance:
-      <select name="bsi_alliance">
-        <option value="">Select…</option>
-        <option value="trust-fragile">trust-fragile</option>
-        <option value="guarded">guarded</option>
-        <option value="neutral">neutral</option>
-        <option value="strong-bond">strong-bond</option>
-      </select>
-    </label>
-
-    <h3>Context</h3>
-    <label>
-      Context (comma-separated):
-      <input
-        type="text"
-        name="bsi_context"
-        placeholder="sleep-deprived, withdrawal-phase"
-      >
-    </label>
-  </section>
-</form>
+<style>
+  .pre-controls { padding: 15px; background:#fafafa; border:1px solid #ddd; border-radius:8px; margin-top:15px; }
+  .btn-primary { padding:8px 12px; background:#0066ee; color:#fff; border:none; border-radius:4px; }
+  .btn-small { margin-right:6px; padding:4px 8px; background:#e0e0e0; border:1px solid #ccc; border-radius:4px; }
+  .mse-block { margin-top:10px; }
+  .dx-preview, .ctc-preview { margin-top:10px; }
+  .snapshot-block { margin-top:12px; }
+  pre { background:#fff; border:1px solid #ccc; padding:8px; max-height:160px; overflow:auto; }
+</style>
 
