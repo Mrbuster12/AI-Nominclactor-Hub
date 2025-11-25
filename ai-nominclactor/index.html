@@ -44,8 +44,9 @@
         <button class="btn" data-target="/treatment-plan/">
           Treatment Plan
         </button>
-        <button class="btn" data-target="/releases-consents/">
-          Releases &amp; Consents
+        <!-- NEW: Legal Documents Storage module (replaces old Releases & Consents) -->
+        <button class="btn" data-target="/legal-docs/">
+          Legal Documents
         </button>
       </div>
     </section>
@@ -67,6 +68,35 @@
   <script src="/shared/ai/vnp_phase2_algorithms.js?v=1759416500"></script>
   <script src="/shared/overrides/ai_action_dispatch.js"></script>
 
+  <!-- ================================ -->
+  <!-- REQUIRED NEW LOGIC INSTALLATIONS -->
+  <!-- ================================ -->
+
+  <!-- Voucher Engine -->
+  <script src="/shared/ai/voucher_engine.js"></script>
+  <script src="/shared/ai/voucher_bridge.js"></script>
+  <script src="/shared/ai/voucher_loader.js"></script>
+  <script src="/shared/ui/voucher_ui.js"></script>
+
+  <!-- Retina State Engine -->
+  <script src="/ops/retina/retina_state.js"></script>
+  <script src="/ops/retina/retina_panel.js"></script>
+
+  <!-- Psychosocial Overdose + Lyria Engines -->
+  <script src="/ops/reflex/overdose_engine.js"></script>
+  <script src="/ops/reflex/overdose_panel.js"></script>
+  <script src="/ops/reflex/lyria_engine.js"></script>
+  <script src="/ops/reflex/lyria_panel.js"></script>
+
+  <!-- Reflex + Projection Engines -->
+  <script src="/ops/reflex/holo_reflex_engine.js"></script>
+  <script src="/ops/reflex/psy_reflex_engine.js"></script>
+  <script src="/ops/reflex/projection_reflex.js"></script>
+
+  <!-- ================================ -->
+  <!-- END REQUIRED LOGIC ADDITIONS -->
+  <!-- ================================ -->
+
   <!-- SAFE shared runtime (NO exports, NO TS runtime modules) -->
   <script src="/shared/ai/interop_bridge_polyfill.js?v=1759319983"></script>
   <script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
@@ -80,6 +110,16 @@
   <script src="/shared/projection/projection_renderer.js?v=1759416500"></script>
   <script src="/shared/projection/chip_activation.js?v=1759416500"></script>
   <script src="/shared/projection/environment_loader.js?v=1759416500"></script>
+
+  <!-- Legacy route shim: if someone somehow lands on old releases-consents, send them to Legal Docs -->
+  <script>
+    (function () {
+      var p = location.pathname || "";
+      if (p === "/releases-consents" || p === "/releases-consents/") {
+        location.replace("/legal-docs/");
+      }
+    })();
+  </script>
 </body>
 </html>
 
