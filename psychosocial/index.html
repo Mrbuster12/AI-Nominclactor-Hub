@@ -815,7 +815,7 @@ function speakText(text) {
 <script defer="" src="assets/js/dap_autofill.js"></script>
 <script defer="" src="assets/js/bpirl_split_dropdown.js"></script>
 
-  <script src="runtime/dsm_influence.js"></script>
+<script src="runtime/dsm_influence.js"></script>
 <!-- Clinician Tendencies (Non-intrusive Addon UI) -->
 <style>
   #tendencies-addon { position: fixed; right: 10px; bottom: 10px; background: rgba(255,255,255,0.92);
@@ -838,8 +838,25 @@ function speakText(text) {
 </div>
 <script src="assets/js/tendencies_addon.js"></script>
 
-<script src="assets/js/remove_legacy_bop.js"></script><script src="/shared/ai/ai_bus.js?v=1759319983"></script>
-  <script src="/shared/overrides/ai_action_dispatch.js"></script>
+<script src="assets/js/remove_legacy_bop.js"></script>
+<script src="/shared/ai/ai_bus.js?v=1759319983"></script>
+<script src="/shared/overrides/ai_action_dispatch.js"></script>
+
+<!-- VOUCHER + RETINA + REFLEX STACK (mirrors AI Hub wiring) -->
+<script src="/shared/ai/vnp_phase2_algorithms.js?v=1759416500"></script>
+<script src="/shared/ai/voucher_bridge.js"></script>
+<script src="/shared/ai/voucher_loader.js"></script>
+<script src="/shared/ui/voucher_ui.js"></script>
+<script src="/ops/retina/retina_state.js"></script>
+<script src="/ops/retina/retina_panel.js"></script>
+<script src="/ops/reflex/holo_reflex_engine.js"></script>
+<script src="/ops/reflex/overdose_engine.js"></script>
+<script src="/ops/reflex/overdose_panel.js"></script>
+<script src="/ops/reflex/lyria_engine.js"></script>
+<script src="/ops/reflex/lyria_panel.js"></script>
+<script src="/ops/reflex/psy_reflex_engine.js"></script>
+<script src="/ops/reflex/projection_reflex.js"></script>
+
 <script src="/shared/ai/projection/engine/projection_runtime.js"></script>
 <script src="/shared/ai/projection/engine/projection_ruleset_loader.js"></script>
 <script src="/shared/ai/projection/corpora/its/its_rules.js"></script>
@@ -870,5 +887,6 @@ function speakText(text) {
 <script src="/shared/projection/chip_activation.js?v=1759413234"></script>
 <script src="/shared/projection/environment_loader.js?v=1759413234"></script>
 </body>
-  <script src="/psychosocial/overrides/psy_adapter_readonly.js?v=20251016-220732"></script>
+<script src="/psychosocial/overrides/psy_adapter_readonly.js?v=20251016-220732"></script>
 </html>
+

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pre‑Assessment (CTC Intake)</title>
+  <title>Pre-Assessment (CTC Intake)</title>
   <link rel="stylesheet" href="./style.css">
   <script defer src="../shared/core/bridge.js"></script>
   <script defer src="./publisher.js"></script>
@@ -11,7 +11,7 @@
 </head>
 <body>
   <header>
-    <h1>Pre‑Assessment (CTC Intake)</h1>
+    <h1>Pre-Assessment (CTC Intake)</h1>
     <p>Compute tier & publish risk envelope</p>
   </header>
   <main class="grid">
@@ -47,76 +47,116 @@
     <button id="publish">Publish to Treatment Plan</button>
     <button id="generateNoteBtn">Generate Note</button>
   </section>
+
+  <!-- Note generator -->
   <script src="../notegen/notegen.js"></script>
-  <script>attachNoteGenerator('#generateNoteBtn');</script>
-<div data-include="/shared/ui/ai-assist.html"></div>
-<script>
-  (function(d){
-    const inc=d.querySelector("[data-include=\"/shared/ui/ai-assist.html\"]");
-    if(!inc) return;
-    fetch("/shared/ui/ai-assist.html").then(r=>r.text()).then(html=>{ var el=inc; if(el && el.parentNode){ el.insertAdjacentHTML("afterend",html); el.remove(); } });})(document);
-</script>
-<script src="/shared/core/ai-launcher.js" type="module"></script>
+  <script>
+    attachNoteGenerator('#generateNoteBtn');
+  </script>
 
-<div data-include="/shared/ui/ai-assist.html"></div>
-<script>
-  (function(d){
-    const inc=d.querySelector("[data-include=\"/shared/ui/ai-assist.html\"]");
-    if(!inc) return;
-    fetch("/shared/ui/ai-assist.html").then(r=>r.text()).then(html=>{ var el=inc; if(el && el.parentNode){ el.insertAdjacentHTML("afterend",html); el.remove(); } });})(document);
-</script>
+  <!-- AI Assist launcher (UI include) -->
+  <div data-include="/shared/ui/ai-assist.html"></div>
+  <script>
+    (function(d){
+      const inc = d.querySelector('[data-include="/shared/ui/ai-assist.html"]');
+      if (!inc) return;
+      fetch("/shared/ui/ai-assist.html")
+        .then(r => r.text())
+        .then(html => {
+          var el = inc;
+          if (el && el.parentNode) {
+            el.insertAdjacentHTML("afterend", html);
+            el.remove();
+          }
+        });
+    })(document);
+  </script>
+  <script src="/shared/core/ai-launcher.js" type="module"></script>
 
+  <!-- (Duplicate include kept for safety with legacy loader) -->
+  <div data-include="/shared/ui/ai-assist.html"></div>
+  <script>
+    (function(d){
+      const inc = d.querySelector('[data-include="/shared/ui/ai-assist.html"]');
+      if (!inc) return;
+      fetch("/shared/ui/ai-assist.html")
+        .then(r => r.text())
+        .then(html => {
+          var el = inc;
+          if (el && el.parentNode) {
+            el.insertAdjacentHTML("afterend", html);
+            el.remove();
+          }
+        });
+    })(document);
+  </script>
+
+  <!-- Local emit + form wiring -->
   <script src="assets/js/intake_emit.js"></script>
   <script src="assets/js/fourcol_form.js"></script>
+
+  <!-- Shared AI + guards -->
   <script src="/shared/bridges/ai_launcher.js"></script>
   <script src="/shared/ai_button.js"></script>
-<script src="/shared/core/interop-hotfix.js?v=ctc1"></script>
-<script src="/shared/bridges/broadcast_bus.js?v=ctc1"></script>
-<script src="/shared/state/vsc-state.js?v=ctc1"></script>
-<script src="/shared/state/hydrators.js?v=ctc1"></script>
-<script src="/pre-assessment-ctc-intake/assets/js/intake_emit.js?v=ctc1"></script>
+  <script src="/shared/core/interop-hotfix.js?v=ctc1"></script>
+  <script src="/shared/bridges/broadcast_bus.js?v=ctc1"></script>
+  <script src="/shared/state/vsc-state.js?v=ctc1"></script>
+  <script src="/shared/state/hydrators.js?v=ctc1"></script>
+  <script src="/pre-assessment-ctc-intake/assets/js/intake_emit.js?v=ctc1"></script>
   <script src="/shared/bridges/ctc_guard.js"></script>
-<script src="/js/load-preassessment.js" defer></script>
-<!-- DEPLOY_MARK:PA-CTC 20 20 12 61 79 80 81 98 33 100 204 250 395 398 399 400date +%s) --><script src="/shared/overrides/ctc_spin_guard.js"></script>
-<script src="/shared/ai/ai_bus.js?v=1759319983"></script>
-<script src="/shared/overrides/ai_action_dispatch.js"></script>
-<script src="/shared/ai/projection/engine/projection_runtime.js"></script>
-<script src="/shared/ai/projection/engine/projection_ruleset_loader.js"></script>
-<script src="/shared/ai/projection/corpora/its/its_rules.js"></script>
-<script src="/shared/ai/projection/engine/projection_engine.js"></script>
-<script src="/shared/vcall/vcall-bridge.js"></script>
-<script src="./pre_session_bridge.js"></script>
-<script src="/group/ui/ai-button-observer.js"></script>
-<script>
-(function(){
-  function ctx(){
-    return {
-      module:'preassessment',
-      session:{ phase:'mid' },
-      metrics: window.aiMetrics || { challengeIndex: 0.3 },
-      signals: window.aiSignals || {}
-    };
-  }
-  async function maybe(){ if(!window.ProjectionEngine) return; await window.ProjectionEngine.project(ctx(), 'psychosocial_focus'); }
-  window.addEventListener('ai:button', maybe);
-})();
-</script>
-<script src="/shared/ai/ai_bus.js"></script>
-<script src="/shared/ai/vsc_bridge.js?v=1759319983"></script>
-<script src="/pre-assessment-ctc-intake/js/preass_emitter.js"></script>
-<script src="/ts_runtime/core.js"></script>
-<script src="./js/ts_runtime_loader.js"></script>
-<script src="/shared/core/dsmctc_core.js"></script>
-<script src="/shared/ai/vsc_bridge.js"></script>
-<script src="/shared/ai/alg_init.js?v=1759272348"></script>
-<script src="/shared/ai/interop_bridge_polyfill.js?v=1759319983"></script>
-<script src="/shared/consent/bio_consent.js?v=1759319983"></script>
-<script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
-<script src="/ts_runtime/biometric/emotional_thresholds.js?v=1759319983"></script>
-<script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
-<script src="/ts_runtime/bandersnatch/index.js?v=1759319983"></script>
-<script src="/shared/ai/bandersnatch_adapter.js?v=1759325712"></script>
+  <script src="/js/load-preassessment.js" defer></script>
+  <!-- DEPLOY_MARK:PA-CTC 20 20 12 61 79 80 81 98 33 100 204 250 395 398 399 400date +%s) -->
+  <script src="/shared/overrides/ctc_spin_guard.js"></script>
+  <script src="/shared/ai/ai_bus.js?v=1759319983"></script>
+  <script src="/shared/overrides/ai_action_dispatch.js"></script>
+
+  <!-- Projection / bandersnatch stack (shared across intake docs) -->
+  <script src="/shared/ai/projection/engine/projection_runtime.js"></script>
+  <script src="/shared/ai/projection/engine/projection_ruleset_loader.js"></script>
+  <script src="/shared/ai/projection/corpora/its/its_rules.js"></script>
+  <script src="/shared/ai/projection/engine/projection_engine.js"></script>
+  <script src="/shared/vcall/vcall-bridge.js"></script>
+  <script src="./pre_session_bridge.js"></script>
+  <script src="/group/ui/ai-button-observer.js"></script>
+
+  <!-- Projection focus hook for psychosocial targeting -->
+  <script>
+    (function(){
+      function ctx() {
+        return {
+          module: 'preassessment',
+          session: { phase: 'mid' },
+          metrics: window.aiMetrics || { challengeIndex: 0.3 },
+          signals: window.aiSignals || {}
+        };
+      }
+      async function maybe() {
+        if (!window.ProjectionEngine) return;
+        await window.ProjectionEngine.project(ctx(), 'psychosocial_focus');
+      }
+      window.addEventListener('ai:button', maybe);
+    })();
+  </script>
+
+  <!-- Core AI + biometric + bandersnatch -->
+  <script src="/shared/ai/ai_bus.js"></script>
+  <script src="/shared/ai/vsc_bridge.js?v=1759319983"></script>
+  <script src="/pre-assessment-ctc-intake/js/preass_emitter.js"></script>
+  <script src="/ts_runtime/core.js"></script>
+  <script src="./js/ts_runtime_loader.js"></script>
+  <script src="/shared/core/dsmctc_core.js"></script>
+  <script src="/shared/ai/vsc_bridge.js"></script>
+  <script src="/shared/ai/alg_init.js?v=1759272348"></script>
+  <script src="/shared/ai/interop_bridge_polyfill.js?v=1759319983"></script>
+  <script src="/shared/consent/bio_consent.js?v=1759319983"></script>
+  <script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
+  <script src="/ts_runtime/biometric/emotional_thresholds.js?v=1759319983"></script>
+  <script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
+  <script src="/ts_runtime/bandersnatch/index.js?v=1759319983"></script>
+  <script src="/shared/ai/bandersnatch_adapter.js?v=1759325712"></script>
 </body>
+
+<!-- OPS / AI HUB INTEGRATION (RETINA, VOUCHER, REFLEX LOOP, CONSENT BUS) -->
 <script src="/ops/vnp/loader.js"></script>
 <script src="/ops/introspect/introspect_core.js"></script>
 <script src="/ops/introspect/introspect_hotfix.js"></script>
@@ -141,3 +181,4 @@
 <script src="/ops/ai_intake_loader.js"></script>
 <script src="/ops/intake_emitter.js"></script>
 </html>
+
