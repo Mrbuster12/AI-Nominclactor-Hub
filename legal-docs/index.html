@@ -106,7 +106,7 @@
           <button type="button"
                   id="btnConsentIntake"
                   style="border:1px solid #4b5563;border-radius:8px;padding:8px 12px;background:#111827;color:#e5e7eb;font-weight:500;cursor:pointer;">
-            Run Consent Gate Check
+            Run Voice Gate Check
           </button>
         </div>
       </form>
@@ -131,7 +131,7 @@
     <p style="margin:0 0 8px 0;font-size:14px;line-height:1.5;">
       This screen will become the primary gate:
       <strong>no access</strong> to Pre-Assessment, Psychosocial, Treatment Plan, or Group modules
-      until consent is granted and biometric checks pass.
+      until consent is granted and biometric voice checks pass.
     </p>
     <pre id="ledgerLog"
          style="margin:0;margin-top:8px;font-size:12px;background:#020617;color:#9ca3af;white-space:pre-wrap;"></pre>
@@ -199,38 +199,35 @@
         });
       }
 
+      // Only talk to the new VoiceGate – no old Releases/Consents UI
       function ensureGate() {
         try {
-          if (window.AIEngine && AIEngine.BioGate && typeof AIEngine.BioGate.require === "function") {
-            AIEngine.BioGate.require();
-            log("BioGate.require() invoked from legal-docs shell.");
-          } else if (window.AIEngine && AIEngine.Consent && typeof AIEngine.Consent.ensure === "function") {
-            AIEngine.Consent.ensure("legal-docs:view", {
-              path: location.pathname,
-              module: "legal-docs"
-            });
-            log("AIEngine.Consent.ensure() invoked as fallback.");
+          if (window.AIEngine && AIEngine.VoiceGate && typeof AIEngine.VoiceGate.require === "function") {
+            AIEngine.VoiceGate.require({ source: "legal-docs", path: location.pathname });
+            log("VoiceGate.require() invoked from legal-docs shell.");
           } else {
-            log("Consent engine not available on this page.");
+            log("VoiceGate not available on this page.");
           }
         } catch (err) {
-          log("Consent gate error:", { error: String(err && err.message || err) });
+          log("Voice gate error:", { error: String(err && err.message || err) });
         }
       }
 
       document.addEventListener("DOMContentLoaded", function () {
         log("LEGAL-DOCS shell loaded.");
-        updateConsentStatus("checking consent…");
+        updateConsentStatus("checking voice gate…");
         ensureGate();
 
-        // Load + render already stored docs
         var existing = loadDocs();
         renderDocList(existing);
 
         if (window.AI_BUS && typeof AI_BUS.subscribe === "function") {
+          AI_BUS.subscribe("voicegate:granted", function (evt) {
+            updateConsentStatus("voice consent granted");
+            log("voicegate:granted received.", evt && evt.payload);
+          });
           AI_BUS.subscribe("biometric:gate:granted", function (evt) {
-            updateConsentStatus("consent granted");
-            log("biometric:gate:granted received.", evt && evt.payload);
+            log("biometric:gate:granted observed in legal-docs.", evt && evt.payload);
           });
         }
 
@@ -239,7 +236,7 @@
           btn.addEventListener("click", function () {
             try {
               ensureGate();
-              updateConsentStatus("consent flow active");
+              updateConsentStatus("voice gate active");
             } catch (e) {
               log("Consent button error:", { error: String(e && e.message || e) });
             }
@@ -296,12 +293,10 @@
               updateConsentStatus("document captured");
               log("Legal document captured.", doc);
 
-              // Publish into AI bus so repo_storage / inbox can react
               if (window.AI_BUS && typeof AI_BUS.publish === "function") {
                 AI_BUS.publish("legal:doc:capture", { payload: doc });
               }
 
-              // Optionally clear some fields (keep name/DOB for multiple forms if you want)
               scopeEl.value = "";
             } catch (e) {
               log("Error capturing legal document", { error: String(e && e.message || e) });
@@ -313,7 +308,7 @@
     })();
   </script>
 
-  <!-- SHARED STACK (same as before) -->
+  <!-- SHARED STACK -->
   <script src="/shared/ai/ai_bus.js?v=1759319983"></script>
   <script src="/shared/overrides/ai_action_dispatch.js"></script>
   <script src="/shared/vcall/vcall-bridge.js"></script>
@@ -321,13 +316,17 @@
   <script src="/shared/ai/vsc_bridge.js?v=1759319983"></script>
   <script src="/shared/ai/interop_bridge_polyfill.js?v=1759319983"></script>
 
+  <!-- NEW VOICE GATE ENGINE -->
+  <script src="/shared/consent/biometric_voice_gate.js?v=1759319983"></script>
+
+  <!-- Existing consent stack (now only for background / ledger behavior, not UI) -->
   <script src="/shared/consent/bio_consent.js?v=1759319983"></script>
   <script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
   <script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
 
   <script src="/ops/consent/bridge_bus.js?v=20251015-004808"></script>
   <script src="/ops/consent/collectors.js?v=20251015-004808"></script>
-  <script src="/ops/consent/orchestrator.js?v=20251015-004808;"></script>
+  <script src="/ops/consent/orchestrator.js?v=20251015-004808"></script>
   <script src="/ops/consent/perm_panel.js?v=20251015-004808"></script>
 
   <script src="/ops/repo_storage.js"></script>
