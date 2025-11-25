@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Legal Documents</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Reuse hub styling -->
+  <link rel="stylesheet" href="/ai-nominclactor/assets/css/style.css">
+</head>
+<body style="padding:24px;background:#0b1220;color:#e5e7eb;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">
+
+  <p>
+    <a href="/" style="text-decoration:none;border:1px solid #374151;padding:8px 12px;border-radius:10px;background:#111827;color:#e5e7eb">
+      ← Return to Hub
+    </a>
+  </p>
+
+  <h1 style="margin:12px 0">Legal Documents</h1>
+  <p style="max-width:720px;line-height:1.5">
+    This module will handle <strong>collection</strong> and <strong>storage</strong> of legal documents:
+    biometric consent, releases of information, and other signed artifacts tied to VSC sessions.
+    Access to downstream modules will be gated here.
+  </p>
+
+  <section style="margin-top:24px;display:flex;flex-wrap:wrap;gap:16px;">
+    <div style="flex:1 1 260px;background:#020617;border-radius:12px;padding:16px;border:1px solid #1f2937;">
+      <h2 style="margin-top:0;margin-bottom:8px;font-size:18px;">Consent Intake</h2>
+      <p style="margin:0 0 12px 0;font-size:14px;line-height:1.5;">
+        Launch the consent collection flow (biometric consent, AI disclosure, session terms).
+      </p>
+      <button id="btnConsentIntake"
+              style="border:none;border-radius:8px;padding:8px 12px;background:#22c55e;color:#020617;font-weight:600;cursor:pointer;">
+        Open Consent Intake
+      </button>
+      <p id="consentStatus"
+         style="margin-top:10px;font-size:13px;color:#9ca3af;">
+        Status: awaiting consent
+      </p>
+    </div>
+
+    <div style="flex:1 1 260px;background:#020617;border-radius:12px;padding:16px;border:1px solid #1f2937;">
+      <h2 style="margin-top:0;margin-bottom:8px;font-size:18px;">Documents on File</h2>
+      <p style="margin:0 0 12px 0;font-size:14px;line-height:1.5;">
+        Stored consents and releases associated with this device/session will appear here once
+        the repository wiring is complete.
+      </p>
+      <ul id="docList" style="margin:0;padding-left:18px;font-size:13px;color:#9ca3af;">
+        <li>No documents loaded yet.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section style="margin-top:24px;background:#020617;border-radius:12px;padding:16px;border:1px solid #1f2937;">
+    <h2 style="margin-top:0;margin-bottom:8px;font-size:18px;">Session Guard</h2>
+    <p style="margin:0 0 8px 0;font-size:14px;line-height:1.5;">
+      This screen will become the primary gate:
+      <strong>no access</strong> to Pre-Assessment, Psychosocial, Treatment Plan, or Group modules
+      until consent is granted and biometric checks pass.
+    </p>
+    <pre id="ledgerLog"
+         style="margin:0;margin-top:8px;font-size:12px;background:#020617;color:#9ca3af;white-space:pre-wrap;"></pre>
+  </section>
+
+  <script>
+    (function () {
+      function log(msg, payload) {
+        var el = document.getElementById('ledgerLog');
+        if (!el) return;
+        var line = "[" + new Date().toISOString() + "] " + msg;
+        if (payload) {
+          try {
+            line += " " + JSON.stringify(payload);
+          } catch (e) {}
+        }
+        el.textContent = (el.textContent ? el.textContent + "\n" : "") + line;
+      }
+
+      function updateConsentStatus(text) {
+        var el = document.getElementById('consentStatus');
+        if (el) el.textContent = "Status: " + text;
+      }
+
+      function ensureGate() {
+        try {
+          if (window.AIEngine && AIEngine.BioGate && typeof AIEngine.BioGate.require === "function") {
+            AIEngine.BioGate.require();
+            log("BioGate.require() invoked from legal-docs shell.");
+          } else if (window.AIEngine && AIEngine.Consent && typeof AIEngine.Consent.ensure === "function") {
+            AIEngine.Consent.ensure("legal-docs:view", {
+              path: location.pathname,
+              module: "legal-docs"
+            });
+            log("AIEngine.Consent.ensure() invoked as fallback.");
+          } else {
+            log("Consent engine not available on this page.");
+          }
+        } catch (err) {
+          log("Consent gate error:", { error: String(err && err.message || err) });
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        log("LEGAL-DOCS shell loaded.");
+        updateConsentStatus("checking consent…");
+        ensureGate();
+
+        if (window.AI_BUS && typeof AI_BUS.subscribe === "function") {
+          AI_BUS.subscribe("biometric:gate:granted", function (evt) {
+            updateConsentStatus("consent granted");
+            log("biometric:gate:granted received.", evt && evt.payload);
+          });
+        }
+
+        var btn = document.getElementById("btnConsentIntake");
+        if (btn) {
+          btn.addEventListener("click", function () {
+            try {
+              ensureGate();
+              updateConsentStatus("consent flow active");
+            } catch (e) {
+              log("Consent button error:", { error: String(e && e.message || e) });
+            }
+          });
+        }
+      });
+    })();
+  </script>
+
+  <script src="/shared/ai/ai_bus.js?v=1759319983"></script>
+  <script src="/shared/overrides/ai_action_dispatch.js"></script>
+  <script src="/shared/vcall/vcall-bridge.js"></script>
+  <script src="/group/ui/ai-button-observer.js"></script>
+  <script src="/shared/ai/vsc_bridge.js?v=1759319983"></script>
+  <script src="/shared/ai/interop_bridge_polyfill.js?v=1759319983"></script>
+
+  <script src="/shared/consent/bio_consent.js?v=1759319983"></script>
+  <script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
+  <script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
+
+  <script src="/ops/consent/bridge_bus.js?v=20251015-004808"></script>
+  <script src="/ops/consent/collectors.js?v=20251015-004808"></script>
+  <script src="/ops/consent/orchestrator.js?v=20251015-004808"></script>
+  <script src="/ops/consent/perm_panel.js?v=20251015-004808"></script>
+
+  <script src="/ops/repo_storage.js"></script>
+  <script src="/shared/consent/inbox_boot.js"></script>
+</body>
+</html>
+

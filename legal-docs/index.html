@@ -18,32 +18,106 @@
 
   <h1 style="margin:12px 0">Legal Documents</h1>
   <p style="max-width:720px;line-height:1.5">
-    This module will handle <strong>collection</strong> and <strong>storage</strong> of legal documents:
+    This module handles <strong>collection</strong> and <strong>storage</strong> of legal documents:
     biometric consent, releases of information, and other signed artifacts tied to VSC sessions.
     Access to downstream modules will be gated here.
   </p>
 
-  <section style="margin-top:24px;display:flex;flex-wrap:wrap;gap:16px;">
-    <div style="flex:1 1 260px;background:#020617;border-radius:12px;padding:16px;border:1px solid #1f2937;">
-      <h2 style="margin-top:0;margin-bottom:8px;font-size:18px;">Consent Intake</h2>
+  <!-- MAIN GRID -->
+  <section style="margin-top:24px;display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">
+
+    <!-- LEFT: CONSENT / RELEASE CAPTURE FORM -->
+    <div style="flex:1 1 320px;background:#020617;border-radius:12px;padding:16px;border:1px solid #1f2937;">
+      <h2 style="margin-top:0;margin-bottom:8px;font-size:18px;">Consent / Release Capture</h2>
       <p style="margin:0 0 12px 0;font-size:14px;line-height:1.5;">
-        Launch the consent collection flow (biometric consent, AI disclosure, session terms).
+        Collect a new consent or release, tie it to this device/session, and push it into the repository.
       </p>
-      <button id="btnConsentIntake"
-              style="border:none;border-radius:8px;padding:8px 12px;background:#22c55e;color:#020617;font-weight:600;cursor:pointer;">
-        Open Consent Intake
-      </button>
+
       <p id="consentStatus"
-         style="margin-top:10px;font-size:13px;color:#9ca3af;">
+         style="margin:0 0 12px 0;font-size:13px;color:#9ca3af;">
         Status: awaiting consent
       </p>
+
+      <form id="consentForm" style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+        <label style="display:flex;flex-direction:column;gap:4px;">
+          <span>Client Name</span>
+          <input id="cfClientName"
+                 type="text"
+                 required
+                 style="border-radius:6px;border:1px solid #374151;padding:6px 8px;background:#020617;color:#e5e7eb;">
+        </label>
+
+        <label style="display:flex;flex-direction:column;gap:4px;">
+          <span>Date of Birth</span>
+          <input id="cfClientDOB"
+                 type="date"
+                 required
+                 style="border-radius:6px;border:1px solid #374151;padding:6px 8px;background:#020617;color:#e5e7eb;">
+        </label>
+
+        <label style="display:flex;flex-direction:column;gap:4px;">
+          <span>Document Type</span>
+          <select id="cfDocType"
+                  required
+                  style="border-radius:6px;border:1px solid #374151;padding:6px 8px;background:#020617;color:#e5e7eb;">
+            <option value="">— Select type —</option>
+            <option value="biometric-consent">Biometric + AI Consent</option>
+            <option value="general-consent">General Treatment Consent</option>
+            <option value="roi-single">Release of Information – Single Party</option>
+            <option value="roi-multi">Release of Information – Multiple Parties</option>
+            <option value="other-legal">Other Legal Document</option>
+          </select>
+        </label>
+
+        <label style="display:flex;flex-direction:column;gap:4px;">
+          <span>Scope / Parties</span>
+          <textarea id="cfScope"
+                    rows="3"
+                    placeholder="Who can see what? List agencies, providers, or scope limits..."
+                    style="border-radius:6px;border:1px solid #374151;padding:6px 8px;background:#020617;color:#e5e7eb;resize:vertical;"></textarea>
+        </label>
+
+        <label style="display:flex;flex-direction:column;gap:4px;">
+          <span>Electronic Signature (type full legal name)</span>
+          <input id="cfSignature"
+                 type="text"
+                 required
+                 placeholder="Type full name to sign"
+                 style="border-radius:6px;border:1px solid #374151;padding:6px 8px;background:#020617;color:#e5e7eb;">
+        </label>
+
+        <label style="display:flex;align-items:flex-start;gap:8px;margin-top:4px;">
+          <input id="cfAcknowledge"
+                 type="checkbox"
+                 required
+                 style="margin-top:2px;">
+          <span>
+            I confirm that I have read and understood the consent/release terms and that this electronic
+            signature is legally binding in my jurisdiction (where permitted).
+          </span>
+        </label>
+
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+          <button type="submit"
+                  style="border:none;border-radius:8px;padding:8px 12px;background:#22c55e;color:#020617;font-weight:600;cursor:pointer;">
+            Save Legal Document
+          </button>
+
+          <button type="button"
+                  id="btnConsentIntake"
+                  style="border:1px solid #4b5563;border-radius:8px;padding:8px 12px;background:#111827;color:#e5e7eb;font-weight:500;cursor:pointer;">
+            Run Consent Gate Check
+          </button>
+        </div>
+      </form>
     </div>
 
+    <!-- RIGHT: DOCUMENTS ON FILE -->
     <div style="flex:1 1 260px;background:#020617;border-radius:12px;padding:16px;border:1px solid #1f2937;">
       <h2 style="margin-top:0;margin-bottom:8px;font-size:18px;">Documents on File</h2>
       <p style="margin:0 0 12px 0;font-size:14px;line-height:1.5;">
-        Stored consents and releases associated with this device/session will appear here once
-        the repository wiring is complete.
+        Documents associated with this device/session are listed here. The repository listener can sync or
+        export them downstream.
       </p>
       <ul id="docList" style="margin:0;padding-left:18px;font-size:13px;color:#9ca3af;">
         <li>No documents loaded yet.</li>
@@ -51,8 +125,9 @@
     </div>
   </section>
 
+  <!-- SESSION GUARD / LEDGER -->
   <section style="margin-top:24px;background:#020617;border-radius:12px;padding:16px;border:1px solid #1f2937;">
-    <h2 style="margin-top:0;margin-bottom:8px;font-size:18px;">Session Guard</h2>
+    <h2 style="margin-top:0;margin-bottom:8px;font-size:18px;">Session Guard & Ledger</h2>
     <p style="margin:0 0 8px 0;font-size:14px;line-height:1.5;">
       This screen will become the primary gate:
       <strong>no access</strong> to Pre-Assessment, Psychosocial, Treatment Plan, or Group modules
@@ -64,6 +139,8 @@
 
   <script>
     (function () {
+      var STORAGE_KEY = "vsc_legal_docs_v1";
+
       function log(msg, payload) {
         var el = document.getElementById('ledgerLog');
         if (!el) return;
@@ -79,6 +156,47 @@
       function updateConsentStatus(text) {
         var el = document.getElementById('consentStatus');
         if (el) el.textContent = "Status: " + text;
+      }
+
+      function loadDocs() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return [];
+          var parsed = JSON.parse(raw);
+          if (!Array.isArray(parsed)) return [];
+          return parsed;
+        } catch (e) {
+          log("Error loading stored legal docs", { error: String(e && e.message || e) });
+          return [];
+        }
+      }
+
+      function persistDocs(docs) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(docs));
+        } catch (e) {
+          log("Error persisting legal docs", { error: String(e && e.message || e) });
+        }
+      }
+
+      function renderDocList(docs) {
+        var list = document.getElementById('docList');
+        if (!list) return;
+        list.innerHTML = "";
+        if (!docs.length) {
+          var li = document.createElement("li");
+          li.textContent = "No documents loaded yet.";
+          list.appendChild(li);
+          return;
+        }
+        docs.forEach(function (doc) {
+          var li = document.createElement("li");
+          var label = (doc.docTypeLabel || doc.docType || "Document") +
+                      " — " + (doc.clientName || "Unknown") +
+                      " — " + (doc.createdAt || doc.ts || "");
+          li.textContent = label;
+          list.appendChild(li);
+        });
       }
 
       function ensureGate() {
@@ -105,6 +223,10 @@
         updateConsentStatus("checking consent…");
         ensureGate();
 
+        // Load + render already stored docs
+        var existing = loadDocs();
+        renderDocList(existing);
+
         if (window.AI_BUS && typeof AI_BUS.subscribe === "function") {
           AI_BUS.subscribe("biometric:gate:granted", function (evt) {
             updateConsentStatus("consent granted");
@@ -123,10 +245,75 @@
             }
           });
         }
+
+        var form = document.getElementById("consentForm");
+        if (form) {
+          form.addEventListener("submit", function (evt) {
+            evt.preventDefault();
+            try {
+              var nameEl = document.getElementById("cfClientName");
+              var dobEl = document.getElementById("cfClientDOB");
+              var typeEl = document.getElementById("cfDocType");
+              var scopeEl = document.getElementById("cfScope");
+              var sigEl = document.getElementById("cfSignature");
+              var ackEl = document.getElementById("cfAcknowledge");
+
+              var clientName = nameEl && nameEl.value.trim();
+              var clientDOB  = dobEl && dobEl.value;
+              var docType    = typeEl && typeEl.value;
+              var scope      = scopeEl && scopeEl.value.trim();
+              var signature  = sigEl && sigEl.value.trim();
+              var acknowledged = !!(ackEl && ackEl.checked);
+
+              if (!clientName || !clientDOB || !docType || !signature || !acknowledged) {
+                alert("All required fields must be completed and acknowledgment must be checked.");
+                return;
+              }
+
+              var typeLabel = (typeEl && typeEl.options && typeEl.selectedIndex >= 0)
+                ? typeEl.options[typeEl.selectedIndex].textContent
+                : docType;
+
+              var doc = {
+                id: "legal-" + Date.now(),
+                clientName: clientName,
+                clientDOB: clientDOB,
+                docType: docType,
+                docTypeLabel: typeLabel,
+                scope: scope,
+                signature: signature,
+                acknowledged: acknowledged,
+                path: location.pathname,
+                module: "legal-docs",
+                createdAt: new Date().toISOString()
+              };
+
+              var docs = loadDocs();
+              docs.push(doc);
+              persistDocs(docs);
+              renderDocList(docs);
+
+              updateConsentStatus("document captured");
+              log("Legal document captured.", doc);
+
+              // Publish into AI bus so repo_storage / inbox can react
+              if (window.AI_BUS && typeof AI_BUS.publish === "function") {
+                AI_BUS.publish("legal:doc:capture", { payload: doc });
+              }
+
+              // Optionally clear some fields (keep name/DOB for multiple forms if you want)
+              scopeEl.value = "";
+            } catch (e) {
+              log("Error capturing legal document", { error: String(e && e.message || e) });
+              alert("Error capturing legal document. See console / ledger log.");
+            }
+          });
+        }
       });
     })();
   </script>
 
+  <!-- SHARED STACK (same as before) -->
   <script src="/shared/ai/ai_bus.js?v=1759319983"></script>
   <script src="/shared/overrides/ai_action_dispatch.js"></script>
   <script src="/shared/vcall/vcall-bridge.js"></script>
@@ -140,7 +327,7 @@
 
   <script src="/ops/consent/bridge_bus.js?v=20251015-004808"></script>
   <script src="/ops/consent/collectors.js?v=20251015-004808"></script>
-  <script src="/ops/consent/orchestrator.js?v=20251015-004808"></script>
+  <script src="/ops/consent/orchestrator.js?v=20251015-004808;"></script>
   <script src="/ops/consent/perm_panel.js?v=20251015-004808"></script>
 
   <script src="/ops/repo_storage.js"></script>

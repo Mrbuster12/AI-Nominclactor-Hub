@@ -1,114 +1,365 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <link rel="stylesheet" href="/shared/overrides/hub_bpirl_block.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Legal Documents Repository</title>
 
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Site Root • ALT • 2025-09-17 12:32:00</title>
+  <!-- Reuse AI Nominclactor styles so it visually matches the hub -->
+  <link rel="stylesheet" href="/ai-nominclactor/assets/css/style.css">
+
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;padding:16px}
-    h1{margin-top:8px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:12px}
-    a.card{display:block;padding:16px;border:1px solid #ddd;border-radius:12px;text-decoration:none;color:#111;background:#fafafa}
-    a.card:hover{background:#f0f0ff;border-color:#cde}
-    small{color:#555}
+    body {
+      padding: 24px;
+      background: #0b1220;
+      color: #e5e7eb;
+      font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    }
+    .topbar {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:16px;
+    }
+    .btn {
+      text-decoration:none;
+      border:1px solid #374151;
+      padding:8px 12px;
+      border-radius:10px;
+      background:#111827;
+      color:#e5e7eb;
+      cursor:pointer;
+      font-size:14px;
+    }
+    .btn:hover {
+      background:#1f2937;
+    }
+    .grid {
+      display:grid;
+      grid-template-columns:1.2fr 1fr;
+      gap:16px;
+    }
+    .card {
+      background:#111827;
+      border-radius:12px;
+      padding:16px;
+      border:1px solid #374151;
+    }
+    .card h2 {
+      margin-top:0;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    label {
+      display:block;
+      margin-top:8px;
+      font-size:14px;
+    }
+    input, select, textarea {
+      width:100%;
+      margin-top:4px;
+      padding:8px;
+      border-radius:8px;
+      border:1px solid #4b5563;
+      background:#020617;
+      color:#e5e7eb;
+      font-size:14px;
+    }
+    textarea {
+      resize:vertical;
+      min-height:80px;
+    }
+    .actions {
+      margin-top:12px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:13px;
+    }
+    th, td {
+      padding:6px 8px;
+      border-bottom:1px solid #1f2937;
+    }
+    th {
+      text-align:left;
+      background:#020617;
+    }
+    .badge {
+      display:inline-block;
+      padding:2px 6px;
+      border-radius:999px;
+      font-size:11px;
+      background:#111827;
+      border:1px solid #4b5563;
+      margin-left:6px;
+    }
+    .status-line {
+      font-size:12px;
+      opacity:0.8;
+      margin-top:8px;
+    }
   </style>
 </head>
+
 <body>
-  <h1>CTC Modular Hub</h1>
-  <p><small>Ephemeral key will be propagated in URL (#k) and bridge auto-enforced.</small></p>
+  <header class="topbar">
+    <h1>Legal Documents Repository</h1>
+    <a class="btn" href="/ai-nominclactor/">← Back to AI Hub</a>
+  </header>
 
-  <div class="grid">
-    <a class="card" href="/assessment-core/?bridge=1">DSM → CTC (Core)</a>
-    <a class="card" href="/treatment-plan-auto/index.html">Treatment Plan</a>
-    <a class="card" href="/mse/">MSE</a>
-    <a class="card" href="/psychosocial/">Biopsychosocial</a>
-    <a class="card" href="/vsc/?bridge=1">Virtual Simulation Coach (VSC)</a>
-    <a class="card" href="/pre-assessment-ctc-intake/index.html"">Pre-Assessment</a>
-    <a class="card" href="/pre-assessment-ctc-intake/">Pre-Assessment</a>
-    <!-- Added Group Therapy Module link -->
-    <a class="card" href="/group/?bridge=1">Group Therapy Module</a>
-    <a class="card" href="/vnp/"> Psychiatric Evaluation (VNP) </a>
-  </div>
+  <main class="grid">
+    <!-- LEFT: Capture new legal document -->
+    <section class="card">
+      <h2>Capture Legal Document</h2>
+      <p class="status-line" id="consentStatus">Consent: pending…</p>
 
-  <script src="/shared/key-propagation.js?v=5"></script>
-  <!-- Interop hotfix wiring: publisher/consumer for cross‑module triggers -->
-  <script src="/shared/core/interop-hotfix.js"></script>
+      <form id="legalDocForm">
+        <label>
+          Document Type
+          <select id="docType" required>
+            <option value="">— Select —</option>
+            <option value="intake_biometric_consent">Intake Biometric Consent</option>
+            <option value="telehealth_consent">Telehealth Consent</option>
+            <option value="general_treatment_consent">General Treatment Consent</option>
+            <option value="release_of_information">Release of Information (ROI)</option>
+            <option value="hipaa_notice_ack">HIPAA Notice Acknowledgment</option>
+            <option value="other_legal_doc">Other Legal Document</option>
+          </select>
+        </label>
 
-  <section class="module-card" style="max-width:960px;margin:24px auto;padding:16px;border:1px solid #1f2937;border-radius:16px;background:#111827;color:#e5e7eb;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
-    <h2 style="margin:0 0 8px 0;font-size:20px;">AI Nominclactor</h2>
-    <p style="margin:0 0 12px 0;line-height:1.4;">Prototype AI clinician module for pre-assessment and psychiatric evaluation scaffolding.</p>
-    <p style="margin:0;"><a href='/ai-nominclactor/' style='display:inline-block;text-decoration:none;padding:10px 14px;border-radius:10px;border:1px solid #374151;background:#1f2937;color:#e5e7eb;'>Open module →</a></p>
-  </section>
+        <label>
+          Client Name
+          <input id="clientName" placeholder="Client full name" required>
+        </label>
 
-<section class="card"><h2 style="margin:0 0 8px 0;font-size:18px">Modules</h2>
-<p style="margin:8px 0"><a class="btn" href="/releases-consents/">Releases / Consents</a></p>
-<p style="margin:8px 0"><a class="btn" href="/residential/">Residential</a></p>
-<p style="margin:8px 0"><a class="btn" href="/outpatient/">Outpatient</a></p>
-<p style="margin:8px 0"><a class="btn" href="/group-sessions/">Group Sessions</a></p>
-<p style="margin:8px 0"><a class="btn" href="/case-management/">Case Management</a></p>
-<p style="margin:8px 0"><a class="btn" href="/utilization-review/">Utilization Review</a></p>
-<p style="margin:8px 0"><a class="btn" href="/discharge-planning/">Discharge Planning</a>
-<p style="margin:8px 0"><a class="btn" href="/assessments/">Assessments</a></p>
-<p style="margin:8px 0"><a class="btn" href="/medical/">Medical</a></p>
-<p style="margin:8px 0"><a class="btn" href="/labs/">Labs</a></p>
-<p style="margin:8px 0"><a class="btn" href="/doctor-psych-eval/">Doctor & Psych Eval</a></p>
-<p style="margin:8px 0"><a class="btn" href="/progress-notes/">Progress Notes</a></p>
-<p style="margin:8px 0"><a class="btn" href="/family/">Family</a></p>
-<p style="margin:8px 0"><a class="btn" href="/mse/">Mental Status Exam</a></p>
-</section>
-  <script src="/shared/bridges/hub_bridge.js"></script>
-  <script src="/shared/bridges/ai_launcher.js"></script>
-  <script src="/shared/bridges/broadcast_bus.js"></script>
-  <script src="/shared/ai_button.js"></script>
-<p style="margin:8px 0"><a class="btn" href="/modules/intake-v2/">Intake V2</a></p>
-<p style="margin:8px 0"><a class="btn" href="/modules/intake-v2/">Intake V2</a></p>
-  <script src="/shared/overrides/hub_bpirl_block.js"></script>
-  <a href="/releases/" class="hub-tile">Releases and Consents</a>
+        <label>
+          Date Signed
+          <input id="signedDate" type="date" required>
+        </label>
+
+        <label>
+          Reference / Notes
+          <textarea id="notes" placeholder="Scope of release, parties, time limits, conditions…"></textarea>
+        </label>
+
+        <label>
+          Client Signature (Typed Name)
+          <input id="signature" placeholder="Type full legal name" required>
+        </label>
+
+        <div class="actions">
+          <button type="submit" class="btn">Store Document</button>
+          <button type="button" id="clearForm" class="btn">Clear</button>
+        </div>
+
+        <p class="status-line" id="saveStatus"></p>
+      </form>
+    </section>
+
+    <!-- RIGHT: Stored legal documents -->
+    <section class="card">
+      <h2>Stored Documents <span class="badge" id="docCount">0</span></h2>
+      <div class="actions">
+        <button type="button" id="reloadDocs" class="btn">Reload List</button>
+      </div>
+      <div style="margin-top:8px;max-height:360px;overflow:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>When</th>
+              <th>Type</th>
+              <th>Client</th>
+              <th>Signed</th>
+            </tr>
+          </thead>
+          <tbody id="docTableBody">
+            <!-- rows injected by JS -->
+          </tbody>
+        </table>
+      </div>
+      <p class="status-line" id="repoStatus"></p>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = 'vsc_legal_docs_store_v1';
+
+      function safeParse(raw) {
+        try { return raw ? JSON.parse(raw) : []; } catch (e) { return []; }
+      }
+
+      function loadDocs() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const docs = Array.isArray(safeParse(raw)) ? safeParse(raw) : [];
+        return docs.sort((a,b) => (b.ts || '').localeCompare(a.ts || ''));
+      }
+
+      function saveDocs(docs) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(docs));
+        } catch (e) {
+          console.warn('[LEGAL-DOCS] localStorage save failed', e);
+        }
+      }
+
+      function renderDocs() {
+        const docs = loadDocs();
+        const tbody = document.getElementById('docTableBody');
+        const badge = document.getElementById('docCount');
+        if (!tbody || !badge) return;
+        tbody.innerHTML = '';
+        docs.forEach(doc => {
+          const tr = document.createElement('tr');
+          const ts = doc.tsDisplay || doc.ts || '';
+          const type = doc.docTypeLabel || doc.docType || '';
+          const client = doc.clientName || '';
+          const signed = doc.signedDate || '';
+          tr.innerHTML = '<td>' + ts + '</td><td>' + type + '</td><td>' + client + '</td><td>' + signed + '</td>';
+          tbody.appendChild(tr);
+        });
+        badge.textContent = String(docs.length);
+        const repoStatus = document.getElementById('repoStatus');
+        if (repoStatus) {
+          repoStatus.textContent = docs.length ? 'Local store active. Latest entry at top.' : 'No stored documents yet.';
+        }
+      }
+
+      function mapDocTypeLabel(value) {
+        switch (value) {
+          case 'intake_biometric_consent': return 'Intake Biometric Consent';
+          case 'telehealth_consent': return 'Telehealth Consent';
+          case 'general_treatment_consent': return 'General Treatment Consent';
+          case 'release_of_information': return 'Release of Information';
+          case 'hipaa_notice_ack': return 'HIPAA Notice Acknowledgment';
+          case 'other_legal_doc': return 'Other Legal Document';
+          default: return value || 'Unknown';
+        }
+      }
+
+      function initForm() {
+        const form = document.getElementById('legalDocForm');
+        const clearBtn = document.getElementById('clearForm');
+        const reloadBtn = document.getElementById('reloadDocs');
+        if (!form) return;
+
+        form.addEventListener('submit', function (evt) {
+          evt.preventDefault();
+          const docType = document.getElementById('docType').value.trim();
+          const clientName = document.getElementById('clientName').value.trim();
+          const signedDate = document.getElementById('signedDate').value;
+          const notes = document.getElementById('notes').value.trim();
+          const signature = document.getElementById('signature').value.trim();
+
+          if (!docType || !clientName || !signedDate || !signature) {
+            const saveStatus = document.getElementById('saveStatus');
+            if (saveStatus) saveStatus.textContent = 'Missing required fields.';
+            return;
+          }
+
+          const now = new Date();
+          const payload = {
+            id: 'doc_' + now.getTime(),
+            ts: now.toISOString(),
+            tsDisplay: now.toLocaleString(),
+            docType: docType,
+            docTypeLabel: mapDocTypeLabel(docType),
+            clientName: clientName,
+            signedDate: signedDate,
+            notes: notes,
+            signature: signature,
+            module: 'legal-docs',
+            path: location.pathname
+          };
+
+          // Save locally
+          const docs = loadDocs();
+          docs.push(payload);
+          saveDocs(docs);
+          renderDocs();
+
+          // Try to push into repo stack if available (non-breaking)
+          try {
+            if (window.RepoStorage && typeof RepoStorage.append === 'function') {
+              RepoStorage.append('legal-docs-repo', payload);
+              const repoStatus = document.getElementById('repoStatus');
+              if (repoStatus) repoStatus.textContent = 'Stored locally and pushed to repo_storage (legal-docs-repo).';
+            }
+          } catch (e) {
+            console.warn('[LEGAL-DOCS] RepoStorage append failed', e);
+          }
+
+          const saveStatus = document.getElementById('saveStatus');
+          if (saveStatus) saveStatus.textContent = 'Document stored at ' + payload.tsDisplay + '.';
+
+          form.reset();
+        });
+
+        if (clearBtn) {
+          clearBtn.addEventListener('click', function () {
+            form.reset();
+            const saveStatus = document.getElementById('saveStatus');
+            if (saveStatus) saveStatus.textContent = '';
+          });
+        }
+
+        if (reloadBtn) reloadBtn.addEventListener('click', function () {
+          renderDocs();
+        });
+      }
+
+      function ensureConsent() {
+        const el = document.getElementById('consentStatus');
+        try {
+          if (window.AIEngine && AIEngine.Consent && typeof AIEngine.Consent.ensure === 'function') {
+            AIEngine.Consent.ensure('legal-docs', {
+              path: location.pathname,
+              module: 'legal-docs'
+            }).then(function (res) {
+              if (el) el.textContent = 'Consent: ' + (res && res.status ? res.status : 'granted');
+            }).catch(function () {
+              if (el) el.textContent = 'Consent: engine error (fallback).';
+            });
+          } else {
+            if (el) el.textContent = 'Consent: engine not available (fallback).';
+          }
+        } catch (err) {
+          console.warn('[LEGAL-DOCS] consent ensure failed', err);
+          if (el) el.textContent = 'Consent: error (fallback).';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        ensureConsent();
+        initForm();
+        renderDocs();
+      });
+    })();
+  </script>
+
+  <!-- Existing AI wiring / repo stack -->
   <script src="/shared/ai/ai_bus.js?v=1759319983"></script>
   <script src="/shared/overrides/ai_action_dispatch.js"></script>
 
-<script src="/shared/vcall/vcall-bridge.js"></script>
-<script src="/group/ui/ai-button-observer.js"></script>
-<script src="/shared/core/bridge.js"></script>
-<script src="/shared/ai/projection/engine/projection_engine.js"></script>
-<script src="/shared/ai/projection/engine/projection_ruleset_loader.js"></script>
-<script src="/shared/ai/projection/engine/projection_runtime.js"></script>
-<script src="/shared/ai/projection/corpora/its/its_rules.js"></script>
-<script>document.addEventListener("DOMContentLoaded",()=>{const f=document.querySelector("footer,[class*=build],[id*=build],[data-build]"); if(f){f.textContent="VSC Hub — LIVE "+new Date().toLocaleString();}});</script>
-<script src="/shared/ai/interop_bridge_polyfill.js?v=1759284696"></script>
-<script src="/shared/consent/bio_consent.js?v=1759319983"></script>
-<script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
-<script src="/ts_runtime/biometric/emotional_thresholds.js?v=1759319983"></script>
-<script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
-<script src="/ts_runtime/bandersnatch/index.js?v=1759319983"></script>
-<script src="/shared/ai/alg_init.js?v=1759415685"></script>
-<script src="/ts_runtime/core.js?v=1759415685"></script>
-<script src="/ts_runtime/introspective/index.js?v=1759415685"></script>
-<script src="/ts_runtime/projection/index.js?v=1759415685"></script>
-<script src="/shared/core/dsmctc_core.js?v=1759415685"></script>
-<script src="/shared/ai/dsmctc_ai_adapter.js?v=1759415685"></script>
-<script src="/shared/projection/projection_renderer.js?v=1759415685"></script>
-<script src="/shared/projection/chip_activation.js?v=1759415685"></script>
-<script src="/shared/projection/environment_loader.js?v=1759415685"></script>
-<script src="/shared/ui/ai_button.js?v=1759415685"></script>
+  <script src="/shared/vcall/vcall-bridge.js"></script>
+  <script src="/group/ui/ai-button-observer.js"></script>
+  <script src="/shared/ai/vsc_bridge.js?v=1759319983"></script>
+  <script src="/shared/ai/interop_bridge_polyfill.js?v=1759319983"></script>
+  <script src="/shared/consent/bio_consent.js?v=1759319983"></script>
+  <script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
+  <script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
+
+  <script src="/ops/consent/bridge_bus.js?v=20251015-004808"></script>
+  <script src="/ops/consent/collectors.js?v=20251015-004808"></script>
+  <script src="/ops/consent/orchestrator.js?v=20251015-004808"></script>
+  <script src="/ops/consent/perm_panel.js?v=20251015-004808"></script>
+
+  <script src="/ops/repo_storage.js"></script>
+  <script src="/shared/consent/inbox_boot.js"></script>
 </body>
-<script src="/ops/hub_label_roles.js"></script>
 </html>
 
-<li><a href="modules/intake-v2/index.html?bridge=1">Intake V2</a></li>
-<script src="/shared/ai/ai_bus.js?v=1759415685"></script>
-<script src="/shared/ai/vsc_bridge.js?v=1759319983"></script>
-<script src="./main-hub/js/hub_ledger.js?v=1759415685"></script>
-<script src="/shared/ai/alg_init.js?v=1759415685"></script>
-<script src="/ts_runtime/core.js?v=1759415685"></script>
-<script src="/ts_runtime/introspective/index.js?v=1759415685"></script>
-<script src="/ts_runtime/projection/index.js?v=1759415685"></script>
-<script src="/shared/core/dsmctc_core.js?v=1759415685"></script>
-<script src="/shared/ai/dsmctc_ai_adapter.js?v=1759415685"></script>
-<script src="/shared/projection/projection_renderer.js?v=1759415685"></script>
-<script src="/shared/projection/chip_activation.js?v=1759415685"></script>
-<script src="/shared/projection/environment_loader.js?v=1759415685"></script>
-<script src="/shared/ui/ai_button.js?v=1759415685"></script>
-</body>
