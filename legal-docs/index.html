@@ -137,6 +137,9 @@
          style="margin:0;margin-top:8px;font-size:12px;background:#020617;color:#9ca3af;white-space:pre-wrap;"></pre>
   </section>
 
+  <!-- VOICE GATE SCRIPT (MUST LOAD BEFORE INLINE LOGIC) -->
+  <script src="/shared/consent/biometric_voice_gate.js?v=1759319983"></script>
+
   <script>
     (function () {
       var STORAGE_KEY = "vsc_legal_docs_v1";
@@ -199,14 +202,17 @@
         });
       }
 
-      // Only talk to the new VoiceGate – no old Releases/Consents UI
-      function ensureGate() {
+      // *** THIS IS THE ONLY GATE WE USE HERE ***
+      function ensureVoiceGate() {
         try {
           if (window.AIEngine && AIEngine.VoiceGate && typeof AIEngine.VoiceGate.require === "function") {
-            AIEngine.VoiceGate.require({ source: "legal-docs", path: location.pathname });
+            AIEngine.VoiceGate.require({
+              path: location.pathname,
+              module: "legal-docs"
+            });
             log("VoiceGate.require() invoked from legal-docs shell.");
           } else {
-            log("VoiceGate not available on this page.");
+            log("Voice gate not available on this page.");
           }
         } catch (err) {
           log("Voice gate error:", { error: String(err && err.message || err) });
@@ -216,18 +222,22 @@
       document.addEventListener("DOMContentLoaded", function () {
         log("LEGAL-DOCS shell loaded.");
         updateConsentStatus("checking voice gate…");
-        ensureGate();
 
+        // Kick off the gate once page is ready
+        ensureVoiceGate();
+
+        // Load + render already stored docs
         var existing = loadDocs();
         renderDocList(existing);
 
         if (window.AI_BUS && typeof AI_BUS.subscribe === "function") {
           AI_BUS.subscribe("voicegate:granted", function (evt) {
-            updateConsentStatus("voice consent granted");
+            updateConsentStatus("voice gate granted");
             log("voicegate:granted received.", evt && evt.payload);
           });
+
           AI_BUS.subscribe("biometric:gate:granted", function (evt) {
-            log("biometric:gate:granted observed in legal-docs.", evt && evt.payload);
+            log("biometric:gate:granted (from voice gate) received.", evt && evt.payload);
           });
         }
 
@@ -235,10 +245,10 @@
         if (btn) {
           btn.addEventListener("click", function () {
             try {
-              ensureGate();
+              ensureVoiceGate();
               updateConsentStatus("voice gate active");
             } catch (e) {
-              log("Consent button error:", { error: String(e && e.message || e) });
+              log("Voice button error:", { error: String(e && e.message || e) });
             }
           });
         }
@@ -293,6 +303,7 @@
               updateConsentStatus("document captured");
               log("Legal document captured.", doc);
 
+              // Publish into AI bus so repo_storage / inbox can react
               if (window.AI_BUS && typeof AI_BUS.publish === "function") {
                 AI_BUS.publish("legal:doc:capture", { payload: doc });
               }
@@ -316,10 +327,6 @@
   <script src="/shared/ai/vsc_bridge.js?v=1759319983"></script>
   <script src="/shared/ai/interop_bridge_polyfill.js?v=1759319983"></script>
 
-  <!-- NEW VOICE GATE ENGINE -->
-  <script src="/shared/consent/biometric_voice_gate.js?v=1759319983"></script>
-
-  <!-- Existing consent stack (now only for background / ledger behavior, not UI) -->
   <script src="/shared/consent/bio_consent.js?v=1759319983"></script>
   <script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
   <script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
