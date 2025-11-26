@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pre-Assessment (CTC Intake)</title>
   <link rel="stylesheet" href="./style.css">
   <script defer src="../shared/core/bridge.js"></script>
@@ -154,27 +154,6 @@
   <script src="/shared/ai/vnp_adapter.js?v=1759319983"></script>
   <script src="/ts_runtime/bandersnatch/index.js?v=1759319983"></script>
   <script src="/shared/ai/bandersnatch_adapter.js?v=1759325712"></script>
-
-  <!-- NEW: Biometric Voice Gate hook for Pre-Assessment -->
-  <script src="/shared/consent/biometric_voice_gate.js?v=1759319983"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      try {
-        if (window.AIEngine &&
-            AIEngine.VoiceGate &&
-            typeof AIEngine.VoiceGate.require === 'function') {
-          AIEngine.VoiceGate.require({
-            path: location.pathname,
-            module: 'pre-assessment-ctc-intake'
-          });
-        } else {
-          console.warn('[PRE] Voice gate not available on this page.');
-        }
-      } catch (err) {
-        console.error('[PRE] voice gate require failed', err);
-      }
-    });
-  </script>
 </body>
 
 <!-- OPS / AI HUB INTEGRATION (RETINA, VOUCHER, REFLEX LOOP, CONSENT BUS) -->
@@ -184,7 +163,7 @@
 <script src="/ops/projection/hologram_loader.js"></script>
 <script src="/ops/projection/position_lock.js"></script>
 <script src="/ops/introspect/introspect_bundle.js"></script>
-script src="/ops/projection/badge.js"></script>
+<script src="/ops/projection/badge.js"></script>
 <script src="/ops/projection/loader.js"></script>
 <script src="/ops/ai_core/registry_polyfill.js"></script>
 <script src="/ops/consent/bridge_bus.js"></script>

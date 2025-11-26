@@ -1,8 +1,8 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Treatment Plan</title>
   <link rel="stylesheet" href="./treatment_plan.css"/>
 </head>
@@ -45,8 +45,7 @@
         <textarea
           id="tpGoalsCustom"
           rows="4"
-          placeholder="Add or refine treatment goals here (client-centered language, measurable targets, etc.)…">
-        </textarea>
+          placeholder="Add or refine treatment goals here (client-centered language, measurable targets, etc.)…"></textarea>
       </div>
     </div>
 
@@ -58,8 +57,7 @@
         <textarea
           id="tpObjectivesCustom"
           rows="4"
-          placeholder="Document specific objectives, timeframes, and behavioral anchors…">
-        </textarea>
+          placeholder="Document specific objectives, timeframes, and behavioral anchors…"></textarea>
       </div>
     </div>
 
@@ -71,8 +69,7 @@
         <textarea
           id="tpInterventionsCustom"
           rows="4"
-          placeholder="List interventions, modalities, and frequency (CBT, MI, group, etc.)…">
-        </textarea>
+          placeholder="List interventions, modalities, and frequency (CBT, MI, group, etc.)…"></textarea>
       </div>
     </div>
 
@@ -81,13 +78,37 @@
       <textarea
         id="tpNotes"
         rows="5"
-        placeholder="Clinician notes…">
-      </textarea>
+        placeholder="Clinician notes…"></textarea>
     </div>
+
+    <!-- CLIENT-FACING SIGNATURE + VOICE-GATE STATUS -->
+    <div class="tp-row">
+      <label for="tpSignatureName">Electronic Signature</label>
+      <div class="tp-field">
+        <input
+          id="tpSignatureName"
+          type="text"
+          placeholder="Type full legal name to sign this treatment plan"/>
+        <label class="tp-inline">
+          <input id="tpSignatureAck" type="checkbox">
+          <span>
+            I confirm that I have reviewed this treatment plan, understand the goals and interventions,
+            and agree to participate in this plan of care.
+          </span>
+        </label>
+        <button id="tpSignatureBtn" type="button">
+          Sign &amp; Lock Treatment Plan
+        </button>
+        <p id="tpSignatureStatus" class="tp-status">
+          Status: not signed
+        </p>
+      </div>
+    </div>
+
   </article>
 </section>
 
-<!-- OPTIONAL: tiny inline style so the new fields don't look insane even if CSS doesn't know tp-field -->
+<!-- Minimal local styling so new fields don’t look broken even if CSS is older -->
 <style>
   .tp-field {
     display: flex;
@@ -98,6 +119,19 @@
     width: 100%;
     resize: vertical;
   }
+  .tp-inline {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.9rem;
+  }
+  .tp-inline input[type="checkbox"] {
+    margin-top: 3px;
+  }
+  .tp-status {
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
 </style>
 
 <!-- EXISTING BRIDGE + INTEROP STACK (LEAVE THEM IN THIS ORDER) -->
@@ -106,13 +140,17 @@
 <script src="/shared/core/interop-hotfix.js"></script>
 <script src="./treatment_plan.view.js"></script>
 
-<!-- NEW: BIOMETRIC CONSENT + INGEST (SAME ENGINE USED IN OTHER MODULES) -->
+<!-- BIOMETRIC CONSENT + INGEST (SAME ENGINE USED IN OTHER MODULES) -->
 <script src="/shared/consent/bio_consent.js?v=1759319983"></script>
 <script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
 
-<!-- INLINE CONSENT HOOK FOR TREATMENT-PLAN VIEW -->
+<!-- VOICE-GATE OVERLAY (same engine used on Legal Docs) -->
+<script src="/shared/consent/biometric_voice_gate.js?v=1759319983"></script>
+
+<!-- INLINE CONSENT + VOICE-GATE + SIGNATURE WIRING -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+  // 1) Standard consent ensure (existing behavior)
   try {
     if (window.AIEngine && AIEngine.Consent && typeof AIEngine.Consent.ensure === 'function') {
       AIEngine.Consent.ensure('treatment-plan:view', {
@@ -124,6 +162,94 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   } catch (err) {
     console.error('[TP] consent ensure failed', err);
+  }
+
+  // 2) Voice gate overlay – same pattern as legal-docs
+  try {
+    if (window.AIEngine && AIEngine.VoiceGate && typeof AIEngine.VoiceGate.require === 'function') {
+      AIEngine.VoiceGate.require({
+        path: location.pathname,
+        module: 'treatment-plan'
+      });
+      console.log('[TP] VoiceGate.require() invoked from treatment-plan shell.');
+    } else {
+      console.log('[TP] Voice gate not available on this page.');
+    }
+  } catch (err2) {
+    console.error('[TP] voice gate error', err2);
+  }
+
+  // 3) Signature capture wiring
+  var nameEl   = document.getElementById('tpSignatureName');
+  var ackEl    = document.getElementById('tpSignatureAck');
+  var btnEl    = document.getElementById('tpSignatureBtn');
+  var statusEl = document.getElementById('tpSignatureStatus');
+
+  function setStatus(msg) {
+    if (statusEl) statusEl.textContent = 'Status: ' + msg;
+  }
+
+  function loadExistingSignature() {
+    try {
+      var raw = localStorage.getItem('vsc_tp_signature_v1');
+      if (!raw) return;
+      var parsed = JSON.parse(raw);
+      if (!parsed || !parsed.name || !parsed.ts) return;
+      setStatus('signed at ' + parsed.ts + ' by ' + parsed.name);
+    } catch (e) {
+      console.warn('[TP] error loading existing signature', e);
+    }
+  }
+
+  loadExistingSignature();
+
+  if (btnEl) {
+    btnEl.addEventListener('click', function () {
+      try {
+        var name = nameEl && nameEl.value ? nameEl.value.trim() : '';
+        var ack  = !!(ackEl && ackEl.checked);
+
+        if (!name) {
+          alert('Please type the client\'s full legal name to sign.');
+          return;
+        }
+        if (!ack) {
+          alert('Please check the box to confirm agreement with this treatment plan.');
+          return;
+        }
+
+        var voiceState = null;
+        if (window.AIEngine && AIEngine.VoiceGate && typeof AIEngine.VoiceGate.getState === 'function') {
+          voiceState = AIEngine.VoiceGate.getState();
+        }
+
+        var stamp = {
+          id: 'tp-sign-' + Date.now(),
+          name: name,
+          acknowledged: ack,
+          ts: new Date().toISOString(),
+          path: location.pathname,
+          module: 'treatment-plan',
+          voiceGate: voiceState || null
+        };
+
+        try {
+          localStorage.setItem('vsc_tp_signature_v1', JSON.stringify(stamp));
+        } catch (e) {
+          console.warn('[TP] error persisting signature', e);
+        }
+
+        setStatus('signed at ' + stamp.ts + ' by ' + stamp.name);
+        console.log('[TP] treatment plan signature captured', stamp);
+
+        if (window.AI_BUS && typeof AI_BUS.publish === 'function') {
+          AI_BUS.publish('tp:signature:capture', { payload: stamp });
+        }
+      } catch (err) {
+        console.error('[TP] signature capture error', err);
+        alert('Error capturing signature. See console for details.');
+      }
+    });
   }
 });
 </script>

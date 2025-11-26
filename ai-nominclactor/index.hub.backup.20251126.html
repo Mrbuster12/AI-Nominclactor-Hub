@@ -44,7 +44,7 @@
         <button class="btn" data-target="/treatment-plan/">
           Treatment Plan
         </button>
-        <!-- Legal Documents Storage module -->
+        <!-- NEW: Legal Documents Storage module (replaces old Releases & Consents) -->
         <button class="btn" data-target="/legal-docs/">
           Legal Documents
         </button>
@@ -111,27 +111,7 @@
   <script src="/shared/projection/chip_activation.js?v=1759416500"></script>
   <script src="/shared/projection/environment_loader.js?v=1759416500"></script>
 
-  <!-- VOICE GATE: global biometric voice consent for the hub -->
-  <script src="/shared/consent/biometric_voice_gate.js?v=1759319983"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      try {
-        if (window.AIEngine && AIEngine.VoiceGate && typeof AIEngine.VoiceGate.require === 'function') {
-          AIEngine.VoiceGate.require({
-            path: location.pathname,
-            module: 'ai-nominclactor-hub'
-          });
-          console.log('[HUB] VoiceGate.require() invoked from AI Nominclactor hub.');
-        } else {
-          console.warn('[HUB] Voice gate not available on this page.');
-        }
-      } catch (err) {
-        console.error('[HUB] voice gate error', err);
-      }
-    });
-  </script>
-
-  <!-- Legacy route shim: redirect old releases-consents path to Legal Docs -->
+  <!-- Legacy route shim: if someone somehow lands on old releases-consents, send them to Legal Docs -->
   <script>
     (function () {
       var p = location.pathname || "";
