@@ -1,10 +1,10 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Treatment Plan</title>
-  <link rel="stylesheet" href="./treatment_plan.css"/>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Treatment Plan</title>
+<link rel="stylesheet" href="./treatment_plan.css"/>
 </head>
 
 <body>
@@ -31,74 +31,13 @@
 
   <article id="tp-display" class="tp-display" aria-label="Current Plan">
     <header><h3>Current Plan</h3></header>
-
-    <div class="tp-row">
-      <label>Provisional Diagnosis</label>
-      <div id="tpDx">—</div>
-    </div>
-
-    <!-- GOALS: system-populated list + manual notes textarea -->
-    <div class="tp-row">
-      <label for="tpGoalsCustom">Goals</label>
-      <div class="tp-field">
-        <ul id="tpGoals"></ul>
-        <textarea
-          id="tpGoalsCustom"
-          rows="4"
-          placeholder="Add or refine treatment goals here (client-centered language, measurable targets, etc.)…">
-        </textarea>
-      </div>
-    </div>
-
-    <!-- OBJECTIVES: system-populated list + manual notes textarea -->
-    <div class="tp-row">
-      <label for="tpObjectivesCustom">Objectives</label>
-      <div class="tp-field">
-        <ul id="tpObjectives"></ul>
-        <textarea
-          id="tpObjectivesCustom"
-          rows="4"
-          placeholder="Document specific objectives, timeframes, and behavioral anchors…">
-        </textarea>
-      </div>
-    </div>
-
-    <!-- INTERVENTIONS: system-populated list + manual notes textarea -->
-    <div class="tp-row">
-      <label for="tpInterventionsCustom">Interventions</label>
-      <div class="tp-field">
-        <ul id="tpInterventions"></ul>
-        <textarea
-          id="tpInterventionsCustom"
-          rows="4"
-          placeholder="List interventions, modalities, and frequency (CBT, MI, group, etc.)…">
-        </textarea>
-      </div>
-    </div>
-
-    <div class="tp-row">
-      <label for="tpNotes">Notes</label>
-      <textarea
-        id="tpNotes"
-        rows="5"
-        placeholder="Clinician notes…">
-      </textarea>
-    </div>
+    <div class="tp-row"><label>Provisional Diagnosis</label><div id="tpDx">—</div></div>
+    <div class="tp-row"><label>Goals</label><ul id="tpGoals"></ul></div>
+    <div class="tp-row"><label>Objectives</label><ul id="tpObjectives"></ul></div>
+    <div class="tp-row"><label>Interventions</label><ul id="tpInterventions"></ul></div>
+    <div class="tp-row"><label>Notes</label><textarea id="tpNotes" rows="5" placeholder="Clinician notes…"></textarea></div>
   </article>
 </section>
-
-<!-- OPTIONAL: tiny inline style so the new fields don't look insane even if CSS doesn't know tp-field -->
-<style>
-  .tp-field {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .tp-field textarea {
-    width: 100%;
-    resize: vertical;
-  }
-</style>
 
 <!-- EXISTING BRIDGE + INTEROP STACK (LEAVE THEM IN THIS ORDER) -->
 <script src="/shared/bridge.js?v=5"></script>
@@ -110,11 +49,11 @@
 <script src="/shared/consent/bio_consent.js?v=1759319983"></script>
 <script src="/shared/ai/biometric_ingest.js?v=1759319983"></script>
 
-<!-- INLINE CONSENT HOOK FOR TREATMENT-PLAN VIEW -->
+<!-- NEW: INLINE CONSENT HOOK FOR TREATMENT-PLAN VIEW -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   try {
-    if (window.AIEngine && AIEngine.Consent && typeof AIEngine.Consent.ensure === 'function') {
+    if (window.AIEngine && AIEngine.Consent && AIEngine.Consent.ensure) {
       AIEngine.Consent.ensure('treatment-plan:view', {
         path: location.pathname,
         module: 'treatment-plan'
